@@ -1,5 +1,3 @@
-import pandas as pd
-
 from Apartments.Apartments import Apartments
 from Crime.Crimes import Crimes
 from Parks.Parks import Parks
@@ -39,7 +37,7 @@ class MainTable:
         extractor = Parks(radius=1, min_area=100)
         return extractor.getData()
 	
-	def _getHigherEducationDB(self):
+    def _getHigherEducationDB(self):
         extractor = HigherEducation(1200)
         return extractor.getData()
 
