@@ -26,12 +26,12 @@ class Apartments:
         self.data = pd.read_csv("Datasets/nyc-rolling-sales.csv")
         self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
         self._removeAptsWithNoArea()
-        self.data['ADDRESS'] = self.data.apply(self._addBoroughToAddress, axis=1)
+        self.data['ADDRESS'] = self.data.apply(self._getFullAddress, axis=1)
 
     def _removeAptsWithNoArea(self):
         self.data = self.data.loc[self.data['LAND SQUARE FEET'] != ' -  '].loc[self.data['LAND SQUARE FEET'] != '0']
 
-    def _addBoroughToAddress(self, row):
+    def _getFullAddress(self, row):
         new_address = row['ADDRESS']  + ', NYC' + ', ' + toBorough(row['BOROUGH'])
         return new_address
         

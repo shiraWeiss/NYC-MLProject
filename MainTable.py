@@ -5,6 +5,10 @@ from PublicTransport.PublicTransport import PublicTransport
 from Education.HigherEducation import HigherEducation
 from Education.HighSchools import HighSchools
 
+HI_ED_FACTOR = 152
+HIGH_SCHOOLS_FACTOR = 100
+BUS_FACTOR = 50     #  bus & subway factors are *really* subject to change
+SUBWAY_FACTOR = 10  #  bus & subway factors are *really* subject to change
 
 class MainTable:
     def __init__(self):
@@ -14,6 +18,8 @@ class MainTable:
         self.hi_ed = self._getHigherEducationDB()
         self.high_schools = self._getHighschoolsDB()
         # other data bases... and than:
+        self.mergeAllDB()
+        self._normalizeFeatures()
 
     def getDB(self):
         return self.main_db
@@ -49,8 +55,20 @@ class MainTable:
         extractor = HighSchools(1200)
         return extractor.getData()
 
+    def _normalizeFeatures(self):
+        self.main_db['HI_ED'] = self.main_db.apply(self._normHiEd, axis=1)
+        self.main_db['HIGH_SCHOOLS'] = self.main_db.apply(self._standardNormalize, args=(HIGH_SCHOOLS_FACTOR,), axis=1)
+        self.main_db['BUS_STOPS'] = self.main_db.apply(self._standardNormalize, args=(BUS_FACTOR,), axis=1)
+        self.main_db['SUBWAY_STOPS'] = self.main_db.apply(self._standardNormalize, args=(BUS_FACTOR,), axis=1)
+
+    def _normHiEd(self, score):
+        return (HI_ED_FACTOR - int(score)) / HI_ED_FACTOR
+
+    def _standardNormalize(self, score, factor):
+        return int(score) / int(factor)
+
+    # TODO : normalize Crime, Parks (after it's added to the main_db)
 
 if __name__ == "__main__":
     creator = MainTable()
-    creator.mergeAllDB()
     print(creator.getDB())
