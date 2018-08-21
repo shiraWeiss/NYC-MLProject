@@ -23,7 +23,7 @@ class Apartments:
         return self.data
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("../Datasets/nyc-rolling-sales.csv")
+        self.data = pd.read_csv("Datasets/nyc-rolling-sales.csv")
         self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
         self._removeAptsWithNoArea()
         self.data['ADDRESS'] = self.data.apply(self._addBoroughToAddress, axis=1)

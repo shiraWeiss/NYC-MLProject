@@ -35,6 +35,16 @@ def getAbbreviation(full_name):
             res = res + c
     return res
 
+def getOnlyNumbers(full_name):
+    res = str()
+    for c in full_name:
+        if c.isdigit():
+            res = res + c
+    if res == '':
+        return 0
+    else:
+        return res
+
 '''
 @param: values - a Series containing the values.
 @param: amounts - a Series containing the amount of objects to be calculated. 
@@ -45,3 +55,4 @@ def getExpectedValue(values, amounts):
     for v, a in zip(values, amounts):
         fraction = fraction + float(v)*float(a)
     return fraction / n
+

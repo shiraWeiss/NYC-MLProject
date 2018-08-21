@@ -115,7 +115,7 @@ class HigherEducation:
             pd.read_csv(name)
         except FileNotFoundError:
             addresses = Apartments().data['ADDRESS'].to_frame()
-            addresses['BEST_HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
+            addresses['HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
         else:
