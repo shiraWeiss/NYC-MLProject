@@ -1,6 +1,6 @@
 import overpy
 from ExtractionUtils import *
-from Apartments.Apartments import Apartments
+from Apartments.Apartments import *
 import pandas as pd
 
 NO_RANK = 200
