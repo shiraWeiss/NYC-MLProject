@@ -8,7 +8,7 @@ from Education.HighSchools import HighSchools
 HI_ED_FACTOR = 152
 HIGH_SCHOOLS_FACTOR = 100
 BUS_FACTOR = 100     #  bus & subway factors are *really* subject to change
-SUBWAY_FACTOR = 10  #  bus & subway factors are *really* subject to change
+SUBWAY_FACTOR = 20  #  bus & subway factors are *really* subject to change
 
 class MainTable:
     def __init__(self):
@@ -56,16 +56,16 @@ class MainTable:
         return extractor.getData()
 
     def _normalizeFeatures(self):
-        self.main_db['HI_ED'] = self.main_db.apply(self._normHiEd, axis=1)
-        self.main_db['HIGH_SCHOOLS'] = self.main_db.apply(self._standardNormalize, args=(HIGH_SCHOOLS_FACTOR,), axis=1)
-        self.main_db['BUS_STOPS'] = self.main_db.apply(self._standardNormalize, args=(BUS_FACTOR,), axis=1)
-        self.main_db['SUBWAY_STOPS'] = self.main_db.apply(self._standardNormalize, args=(BUS_FACTOR,), axis=1)
+        self.main_db['HI_ED'] = self.main_db['HI_ED'].apply(self._normHiEd)
+        self.main_db['HIGH_SCHOOLS'] = self.main_db['HIGH_SCHOOLS'].apply(self._standardNormalize, args=(HIGH_SCHOOLS_FACTOR,))
+        self.main_db['BUS_STOPS'] = self.main_db['BUS_STOPS'].apply(self._standardNormalize, args=(BUS_FACTOR,))
+        self.main_db['SUBWAY_STOPS'] = self.main_db['SUBWAY_STOPS'].apply(self._standardNormalize, args=(BUS_FACTOR,))
 
     def _normHiEd(self, score):
-        return (HI_ED_FACTOR - int(score)) / HI_ED_FACTOR
+        return (HI_ED_FACTOR - float(score)) / HI_ED_FACTOR
 
     def _standardNormalize(self, score, factor):
-        return int(score) / int(factor)
+        return float(score) / float(factor)
 
     # TODO : normalize Crime, Parks (after it's added to the main_db)
 
