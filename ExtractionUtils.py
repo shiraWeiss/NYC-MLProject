@@ -1,6 +1,6 @@
 from geopy.geocoders import Nominatim
 import pandas as pd
-TEST_LINES = 10
+TEST_LINES = 100
 
 geolocator = Nominatim(user_agent="utils123", timeout=5)
 
