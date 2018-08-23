@@ -1,8 +1,8 @@
 import pandas as pd
-
 from geopy.geocoders import Nominatim
 TEST_LINES = 10
 
+geolocator = Nominatim(user_agent="utils123", timeout=5)
 
 def removeRowsWithEmptyCol(df, col):
     return df.loc[df[col] != ' -  '].loc[df[col] != '0'].dropna(subset=[col])

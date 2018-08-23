@@ -1,10 +1,6 @@
 import pandas as pd
+from ExtractionUtils import *
 
-from geopy.geocoders import Nominatim
-from ExtractionUtils import TEST_LINES, removeCols, removeRowsWithEmptyCol
-
-
-geolocator = Nominatim(user_agent="utils123", timeout=5)
 
 class Apartments:
     def __init__(self):
