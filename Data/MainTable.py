@@ -1,4 +1,4 @@
-from Data.Apartments.Apartments import Apartments
+from Data.Apartments.Apartments import *
 from Data.Crime.Crimes import Crimes
 from Data.Parks.Parks import Parks
 from Data.PublicTransport.PublicTransport import PublicTransport
@@ -34,7 +34,7 @@ class MainTable:
         self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left').fillna(value=0)
 
     def _getAptsDB(self):
-        extractor = Apartments()
+        extractor = Apartments.getInstance()
         return extractor.getAptsData()
 
     def _getCrimesDB(self):
@@ -60,8 +60,8 @@ class MainTable:
     def _normalizeFeatures(self):
         self.main_db['HI_ED'] = self.main_db['HI_ED'].apply(self._normHiEd)
         self.main_db['HIGH_SCHOOLS'] = self._normalizeByMaxValue('HIGH_SCHOOLS')
-        self.main_db['BUS_STOPS'] = self.main_db['BUS_STOPS'].apply(self._standardNormalize, args=(BUS_FACTOR,))
-        self.main_db['SUBWAY_STOPS'] = self.main_db['SUBWAY_STOPS'].apply(self._standardNormalize, args=(BUS_FACTOR,))
+        self.main_db['BUS_STOPS'] = self._normalizeByMaxValue('BUS_STOPS')
+        self.main_db['SUBWAY_STOPS'] = self._normalizeByMaxValue('SUBWAY_STOPS')
         self.main_db['CRIMES'] = self._normalizeByMaxValue('CRIMES')
         self.main_db['NUM_OF_PARKS'] = self._normalizeByMaxValue('NUM_OF_PARKS')
         self.main_db['AREA_OF_PARKS'] = self._normalizeByMaxValue('AREA_OF_PARKS')
@@ -80,5 +80,6 @@ class MainTable:
     # TODO : normalize Crime, Parks (after it's added to the main_db)
 
 if __name__ == "__main__":
+    createCoordinatesFile()
     creator = MainTable()
     print(creator.getDB())

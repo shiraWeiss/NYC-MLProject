@@ -21,7 +21,7 @@ class HighSchools:
         self.full_report = self.full_report.loc[self.full_report['Mean Score'] != 's']
 
     def generateMergedReport(self):
-        name = "C:/Users/lenovo/PycharmProjects/NYC-Data/Education/regents_merged" + str(self.curr_radius) +".csv"
+        name = "Education/regents_merged" + str(self.curr_radius) +".csv"
         try:
             self.merged_report = pd.read_csv(name)
         except FileNotFoundError:
@@ -94,7 +94,7 @@ class HighSchools:
         try:
             pd.read_csv(name)
         except FileNotFoundError:
-            addresses = Apartments().data['ADDRESS'].to_frame()
+            addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
             addresses['HIGH_SCHOOLS'] = addresses.apply(self.getBestHighschoolsAroundAddress, axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
@@ -103,7 +103,7 @@ class HighSchools:
 
 
     def loadHighschoolsDB(self):
-        name = "C:/Users/lenovo/PycharmProjects/NYC-Data/Education/high_schools_db" + str(self.curr_radius) + ".csv"
+        name = "Education/high_schools_db" + str(self.curr_radius) + ".csv"
         try:
             self.high_schools_db = pd.read_csv(name)
         except FileNotFoundError:

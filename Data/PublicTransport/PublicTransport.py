@@ -42,7 +42,7 @@ class PublicTransport:
         try:
             pd.read_csv(name)
         except FileNotFoundError:
-            addresses = Apartments().data['ADDRESS'].to_frame()
+            addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
             addresses['BUS_STOPS'] = addresses.apply(self.busStopsAroundAddress, args=(radius,), axis=1)
             addresses['SUBWAY_STOPS'] = addresses.apply(self.subwayStopsAroundAddress, args=(radius,), axis=1)
             addresses.to_csv(path_or_buf=name, index=False)

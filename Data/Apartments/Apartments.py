@@ -1,9 +1,18 @@
 from Data.ExtractionUtils import *
 
-
 class Apartments:
+    _instance = None
+
     def __init__(self):
+        Apartments._instance = self
         self._createBaseDB()
+
+    @staticmethod
+    def getInstance():
+        if Apartments._instance == None:
+            Apartments()
+        return Apartments._instance
+
 
     def getAptsData(self):
         return self.data
@@ -45,10 +54,10 @@ def addressToCoordinates_aux(address):
     return location.latitude, location.longitude
 
 def createCoordinatesFile():
-    apts = Apartments()
+    apts = Apartments.getInstance()
     coord = apts.data['ADDRESS'].apply(addressToCoordinates_aux)
     apts.data[['LAT', 'LON']] = coord.apply(pd.Series)
-    apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord.csv", index=False)
+    apts.data.to_csv(path_or_buf="Datasets/nyc-rolling-sales-coord.csv", index=False)
 
 def toBorough(borough_num):
     if borough_num == 1:

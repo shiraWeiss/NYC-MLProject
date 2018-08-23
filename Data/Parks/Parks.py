@@ -20,7 +20,7 @@ class Parks:
     """
     def __init__(self, radius, min_area):
         self.parks_data = self._extractParksData(min_area)  # parks_data doesn't contain the relation to the apartments
-        self.data = Apartments().data['ADDRESS'].to_frame()  # data will contain a mapping from each apartment to
+        self.data = Apartments.getInstance().data['ADDRESS'].to_frame()  # data will contain a mapping from each apartment to
         parks_and_areas = self.data['ADDRESS'].apply(self._countAndSumParksInRadius, args=(radius,))
         self.data[['NUM_OF_PARKS', 'AREA_OF_PARKS']] = parks_and_areas.apply(pd.Series)
 
