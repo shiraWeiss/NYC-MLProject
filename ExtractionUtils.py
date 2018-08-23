@@ -1,8 +1,6 @@
-from geopy.geocoders import Nominatim
 import pandas as pd
+from geopy.geocoders import Nominatim
 TEST_LINES = 10
-
-geolocator = Nominatim(user_agent="utils123", timeout=5)
 
 
 def removeRowsWithEmptyCol(df, col):
@@ -14,12 +12,6 @@ Turns all the values of a dataframes' column to Int type
 '''
 def colToInt(df, col_name):
     return df[col_name].apply(int)
-
-
-def addressToCoordinates(address):
-    location = geolocator.geocode(address)
-    return location.latitude, location.longitude
-
 
 '''
 @params df - a dataframe, cols - a list of columns that we want to keep from the df

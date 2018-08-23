@@ -1,5 +1,5 @@
 import overpy
-from Apartments.Apartments import Apartments
+from Apartments.Apartments import *
 import pandas as pd
 from ExtractionUtils import *
 
