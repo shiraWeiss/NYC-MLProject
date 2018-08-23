@@ -7,7 +7,7 @@ from Education.HighSchools import HighSchools
 
 HI_ED_FACTOR = 152
 HIGH_SCHOOLS_FACTOR = 100
-BUS_FACTOR = 50     #  bus & subway factors are *really* subject to change
+BUS_FACTOR = 100     #  bus & subway factors are *really* subject to change
 SUBWAY_FACTOR = 10  #  bus & subway factors are *really* subject to change
 
 class MainTable:

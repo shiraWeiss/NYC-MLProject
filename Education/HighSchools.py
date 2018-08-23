@@ -70,6 +70,9 @@ class HighSchools:
         if by_public != NO_RANK:
             rank = by_public
 
+        if rank == NO_RANK:
+            rank = 0
+
         return rank
 
 
