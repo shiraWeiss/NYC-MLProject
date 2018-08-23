@@ -10,8 +10,9 @@ class HigherEducation:
         self.api = overpy.Overpass()
         self.geolocator = Nominatim(user_agent="higher123", timeout=20)
         self.curr_radius = radius
-        self.rankings = pd.read_csv("C:/Users/lenovo/PycharmProjects/NYC-Data/Education/uni-rank-2.csv")
+        self.rankings = pd.read_csv("Education/uni-rank-2.csv")
         self.rankings['SHORT'] = self.rankings['UNIVERSITY'].apply(getAbbreviation)
+        self.hied_db = pd.DataFrame()
         self.pushHiEdDB(radius)
         self.loadHiEdDB()
 
@@ -110,12 +111,12 @@ class HigherEducation:
     This way, there is no need to run the function more than once for a specific radius.  
     '''
     def pushHiEdDB(self, radius):
-        name = "C:/Users/lenovo/PycharmProjects/NYC-Data/Education/hied_db" + str(radius) + ".csv"
+        name = "Education/hied_db" + str(radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
             addresses = Apartments().data['ADDRESS'].to_frame()
-            addresses['BEST_HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
+            addresses['HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
         else:
@@ -128,7 +129,7 @@ class HigherEducation:
     get the relevant csv.
     '''
     def loadHiEdDB(self):
-        name = "C:/Users/lenovo/PycharmProjects/NYC-Data/Education/hied_db" + str(self.curr_radius) + ".csv"
+        name = "Education/hied_db" + str(self.curr_radius) + ".csv"
         try:
             self.hied_db = pd.read_csv(name)
         except FileNotFoundError:
@@ -136,6 +137,7 @@ class HigherEducation:
 
     def getData(self):
         return self.hied_db
+
 
 if __name__ == '__main__':
     hi_ed = HigherEducation(1200)
