@@ -1,4 +1,5 @@
 from geopy.distance import geodesic
+from geopy.exc import GeocoderTimedOut
 
 from Data.Apartments.Apartments import Apartments
 from Data.ExtractionUtils import *
@@ -43,7 +44,11 @@ class Parks:
     '''
 
     def _countAndSumParksInRadius(self, address, radius):
-        location = geolocator.geocode(address)
+        try:
+            location = geolocator.geocode(address)
+        except GeocoderTimedOut:
+            self._countAndSumParksInRadius(address, radius)
+
         apartment_coords = (location.latitude, location.longitude)
         counter = 0
         total_area = 0

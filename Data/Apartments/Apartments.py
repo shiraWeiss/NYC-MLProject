@@ -1,3 +1,7 @@
+import re
+
+from geopy.exc import GeocoderTimedOut
+
 from Data.ExtractionUtils import *
 
 class Apartments:
@@ -21,7 +25,7 @@ class Apartments:
         self.data = pd.read_csv("Datasets/nyc-rolling-sales.csv")
         self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
         self._removeAptsWithMissingData()
-        self.data['ADDRESS'] = self.data.apply(self._getFullAddress, axis=1)
+        self._fixAddress()
         self._normalizeApartsPrice()
 
     '''
@@ -44,19 +48,34 @@ class Apartments:
         self.data['SQR_FEET_PRICE'] = self.data.apply(lambda row : float(row['SALE PRICE'])/float(row['LAND SQUARE FEET']), axis=1)
         self.data = removeCols(self.data, 'SALE PRICE')
 
+    '''
+    Remove the apartment's apartment number (in the building), and add NY borough  
+    '''
+    def _fixAddress(self):
+        self.data['ADDRESS'] = self.data['ADDRESS'].apply(lambda address: re.sub(r',.*', "", address))
+        self.data['ADDRESS'] = self.data.apply(self._getFullAddress, axis=1)
+
 def addressToCoordinates(address):
     data = pd.read_csv("Datasets/nyc-rolling-sales-coord.csv")
     address_data = data.loc[data['ADDRESS'] == address]
     return float(address_data['LAT']), float(address_data['LON'])
 
 def addressToCoordinates_aux(address):
-    location = geolocator.geocode(address)
-    return location.latitude, location.longitude
+    try:
+        return geolocator.geocode(address)
+    except GeocoderTimedOut:
+        return addressToCoordinates_aux(address)
+
 
 def createCoordinatesFile():
     apts = Apartments.getInstance()
     coord = apts.data['ADDRESS'].apply(addressToCoordinates_aux)
+    # get the coordinates to a new column, so we remove rows without valid coordinates from the data
+    apts.data['tmp'] = coord
+    apts.data = removeRowsWithEmptyCol(apts.data, 'tmp')
     apts.data[['LAT', 'LON']] = coord.apply(pd.Series)
+    removeCols(apts.data, 'tmp')
+
     apts.data.to_csv(path_or_buf="Datasets/nyc-rolling-sales-coord.csv", index=False)
 
 def toBorough(borough_num):
