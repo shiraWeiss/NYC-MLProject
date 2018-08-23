@@ -59,26 +59,35 @@ class HigherEducation:
     match, that will probably cause the feature to be a bit weak. 
     '''
     def getRankByNode(self, node):
+        rank = NO_RANK
+
         full_name = str(node.tags.get("name"))
 
         # first of all, let's try to get the rank using the full name from the map. maybe we're lucky!
         by_full_name = self.getRankDirectFromTable_byName(full_name)
         if by_full_name != NO_RANK:
-            return by_full_name
+            rank = by_full_name
 
         # but... in most cases we'll get here. now let's try to get the operator from the map and use it.
         if node.tags.get("operator") is not None:
-            return self.getRankDirectFromTable_byName(str(node.tags.get("operator")))
+            rank = self.getRankDirectFromTable_byName(str(node.tags.get("operator")))
 
         short_name = getAbbreviation(full_name)
         # a lot of nodes don't have an operator field. Let's try our Abbreviations table.
         by_short_name = self.getRankDirectFromTable_byShort(short_name)
         if by_short_name != NO_RANK:
-            return by_short_name
+            rank = by_short_name
 
         # handle NYU, SUNY and CUNY
         weak_operator = self.findOperatorManually(short_name)
-        return self.getRankDirectFromTable_byName(weak_operator)
+        by_weak = self.getRankDirectFromTable_byName(weak_operator)
+        if by_weak != NO_RANK:
+            rank = by_weak
+
+        if rank == NO_RANK:
+            rank = 0
+
+        return rank
 
     '''
     This function uses the 'allHiEd...' function and simply chooses the intitute with the best
