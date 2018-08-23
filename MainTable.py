@@ -17,7 +17,8 @@ class MainTable:
         self.transport = self._getTransportDB()
         self.hi_ed = self._getHigherEducationDB()
         self.high_schools = self._getHighschoolsDB()
-        # other data bases... and than:
+        self.parks = self._getParksDB()
+
         self.mergeAllDB()
         self._normalizeFeatures()
 
@@ -30,6 +31,7 @@ class MainTable:
         self.main_db = self.main_db.merge(self.transport, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.hi_ed, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.high_schools, on='ADDRESS', how='left')
+        self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left')
 
     def _getAptsDB(self):
         extractor = Apartments()
@@ -57,9 +59,15 @@ class MainTable:
 
     def _normalizeFeatures(self):
         self.main_db['HI_ED'] = self.main_db['HI_ED'].apply(self._normHiEd)
-        self.main_db['HIGH_SCHOOLS'] = self.main_db['HIGH_SCHOOLS'].apply(self._standardNormalize, args=(HIGH_SCHOOLS_FACTOR,))
+        self.main_db['HIGH_SCHOOLS'] = self._normalizeByMaxValue('HIGH_SCHOOLS')
         self.main_db['BUS_STOPS'] = self.main_db['BUS_STOPS'].apply(self._standardNormalize, args=(BUS_FACTOR,))
         self.main_db['SUBWAY_STOPS'] = self.main_db['SUBWAY_STOPS'].apply(self._standardNormalize, args=(BUS_FACTOR,))
+        self.main_db['CRIMES'] = self._normalizeByMaxValue('CRIMES')
+        self.main_db['NUM_OF_PARKS'] = self._normalizeByMaxValue('NUM_OF_CRIMES')
+        self.main_db['AREA_OF_PARKS'] = self._normalizeByMaxValue('AREA_OF_PARKS')
+
+    def _normalizeByMaxValue(self, col):
+        return self.main_db[col].apply(self._standardNormalize, args=(self.main_db[col].max,))
 
     def _normHiEd(self, score):
         return (HI_ED_FACTOR - float(score)) / HI_ED_FACTOR

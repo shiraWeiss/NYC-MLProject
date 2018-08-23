@@ -6,8 +6,7 @@ geolocator = Nominatim(user_agent="utils123", timeout=5)
 
 
 def removeRowsWithEmptyCol(df, col):
-    return df.loc[df[col] != ' -  '].loc[df[col] != '0']
-
+    return df.loc[df[col] != ' -  '].loc[df[col] != '0'].dropna(subset=[col])
 
 '''
 Turns all the values of a dataframes' column to Int type
@@ -27,6 +26,13 @@ def addressToCoordinates(address):
 '''
 def selectCols(df, cols):
     return df[cols]
+
+'''
+@params df - a dataframe, cols - a list of columns that we want to remove from df
+@return return a dataframe without the input columns
+'''
+def removeCols(df, cols):
+    return df.drop(columns=cols)
 
 def getAbbreviation(full_name):
     res = str()
