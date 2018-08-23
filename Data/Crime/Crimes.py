@@ -3,7 +3,7 @@ from uszipcode import ZipcodeSearchEngine as zipcode
 
 import pandas as pd
 
-from ExtractionUtils import colToInt, TEST_LINES
+from Data.ExtractionUtils import colToInt, TEST_LINES
 
 
 class Crimes:

@@ -1,7 +1,6 @@
 import overpy
-from Apartments.Apartments import *
-import pandas as pd
-from ExtractionUtils import *
+from Data.Apartments.Apartments import *
+from Data.ExtractionUtils import *
 
 class PublicTransport:
     def __init__(self, radius):

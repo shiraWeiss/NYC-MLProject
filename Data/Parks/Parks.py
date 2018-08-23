@@ -1,9 +1,7 @@
-import overpy
-import pandas as pd
 from geopy.distance import geodesic
 
-from Apartments.Apartments import Apartments
-from ExtractionUtils import *
+from Data.Apartments.Apartments import Apartments
+from Data.ExtractionUtils import *
 
 '''
 Create a data frame that maps an apartment address to the number of parks near the apartment, and the total area of the

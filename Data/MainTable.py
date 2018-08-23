@@ -1,9 +1,9 @@
-from Apartments.Apartments import Apartments
-from Crime.Crimes import Crimes
-from Parks.Parks import Parks
-from PublicTransport.PublicTransport import PublicTransport
-from Education.HigherEducation import HigherEducation
-from Education.HighSchools import HighSchools
+from Data.Apartments.Apartments import Apartments
+from Data.Crime.Crimes import Crimes
+from Data.Parks.Parks import Parks
+from Data.PublicTransport.PublicTransport import PublicTransport
+from Data.Education.HigherEducation import HigherEducation
+from Data.Education.HighSchools import HighSchools
 
 HI_ED_FACTOR = 152
 HIGH_SCHOOLS_FACTOR = 100

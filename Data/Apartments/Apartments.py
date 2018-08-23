@@ -1,5 +1,4 @@
-import pandas as pd
-from ExtractionUtils import *
+from Data.ExtractionUtils import *
 
 
 class Apartments:
