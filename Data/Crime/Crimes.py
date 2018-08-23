@@ -11,7 +11,7 @@ class Crimes:
     Y_COORD = 'Longitude'
 
     def __init__(self):
-        self.data = pd.read_csv("Crime/crimes.csv")
+        self.data = pd.read_csv("Data/Crime/crimes.csv")
         self.data = self.data.head(TEST_LINES)  # todo remove!! short only for testing
         self.keepOnlyCoordsCols()
         self.coordsToZipcode()

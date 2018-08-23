@@ -9,7 +9,7 @@ class HighSchools:
         self.api = overpy.Overpass()
         self.geolocator = Nominatim(user_agent="highschools123", timeout=20)
         self.curr_radius = radius
-        self.full_report = pd.read_csv("Education/regents_report.csv").head(100) # todo - removeeeee
+        self.full_report = pd.read_csv("Data/Education/regents_report.csv").head(100) # todo - removeeeee
         self._removeSchoolsWithNoMeanScore()
         self.merged_report = pd.DataFrame(columns=['School Name', 'Mean Expected Value'])
         self.generateMergedReport()
@@ -21,7 +21,7 @@ class HighSchools:
         self.full_report = self.full_report.loc[self.full_report['Mean Score'] != 's']
 
     def generateMergedReport(self):
-        name = "Education/regents_merged" + str(self.curr_radius) +".csv"
+        name = "Data/Education/regents_merged" + str(self.curr_radius) +".csv"
         try:
             self.merged_report = pd.read_csv(name)
         except FileNotFoundError:
@@ -90,7 +90,7 @@ class HighSchools:
         return best_rank
 
     def pushHighschoolsDB(self, radius):
-        name = "Education/high_schools_db" + str(radius) + ".csv"
+        name = "Data/Education/high_schools_db" + str(radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
@@ -103,7 +103,7 @@ class HighSchools:
 
 
     def loadHighschoolsDB(self):
-        name = "Education/high_schools_db" + str(self.curr_radius) + ".csv"
+        name = "Data/Education/high_schools_db" + str(self.curr_radius) + ".csv"
         try:
             self.high_schools_db = pd.read_csv(name)
         except FileNotFoundError:

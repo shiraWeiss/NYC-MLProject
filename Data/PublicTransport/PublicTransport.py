@@ -38,7 +38,7 @@ class PublicTransport:
     This way, there is no need to run the function more than once for a specific radius.  
     '''
     def pushTransportDB(self, radius):
-        name = "PublicTransport/transport_db" + str(radius) + ".csv"
+        name = "Data/PublicTransport/transport_db" + str(radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
@@ -57,7 +57,7 @@ class PublicTransport:
     get the relevant csv.
     '''
     def loadTransportDB(self):
-        name = "PublicTransport/transport_db" + str(self.curr_radius) + ".csv"
+        name = "Data/PublicTransport/transport_db" + str(self.curr_radius) + ".csv"
         try:
             self.transport_db = pd.read_csv(name)
         except FileNotFoundError:

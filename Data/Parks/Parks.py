@@ -30,7 +30,7 @@ class Parks:
     PARK_NAME, LOCATION, PARK_AREA, where 'LOCATION' is the coordinates of the park
     '''
     def _extractParksData(self, min_area):
-        self.parks_data = pd.read_csv("Parks/parksProperties.csv")
+        self.parks_data = pd.read_csv("Data/Parks/parksProperties.csv")
         self.parks_data = self.parks_data.head(TEST_LINES)  # todo remove!! short only for testing
         self._keepRelevantParksData()
         self._filterOutParksSmallerThan(min_area)

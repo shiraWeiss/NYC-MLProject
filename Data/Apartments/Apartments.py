@@ -4,6 +4,7 @@ from geopy.exc import GeocoderTimedOut
 
 from Data.ExtractionUtils import *
 
+
 class Apartments:
     _instance = None
 
@@ -22,7 +23,7 @@ class Apartments:
         return self.data
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("Datasets/nyc-rolling-sales.csv")
+        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
         self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
         self._removeAptsWithMissingData()
         self._fixAddress()
@@ -56,7 +57,7 @@ class Apartments:
         self.data['ADDRESS'] = self.data.apply(self._getFullAddress, axis=1)
 
 def addressToCoordinates(address):
-    data = pd.read_csv("Datasets/nyc-rolling-sales-coord.csv")
+    data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
     address_data = data.loc[data['ADDRESS'] == address]
     return float(address_data['LAT']), float(address_data['LON'])
 

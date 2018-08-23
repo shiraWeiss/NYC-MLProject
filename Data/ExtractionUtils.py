@@ -4,8 +4,8 @@ from geopy.geocoders import Nominatim
 geolocator = Nominatim(user_agent="utils123", timeout=5)
 TEST_LINES = 2000
 
-def removeRowsWithEmptyCol(df: object, col: object) -> object:
-    return df.loc[df[col] != ' -  '].loc[df[col] != '0'].dropna(subset=[col])
+def removeRowsWithEmptyCol(df, col):
+    return df.loc[df[col].apply(str) != ' -  '].loc[df[col].apply(str) != '0'].dropna(subset=[col])
 
 '''
 Turns all the values of a dataframes' column to Int type

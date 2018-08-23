@@ -77,7 +77,6 @@ class MainTable:
             return 0
         return float(score) / float(factor)
 
-    # TODO : normalize Crime, Parks (after it's added to the main_db)
 
 if __name__ == "__main__":
     createCoordinatesFile()

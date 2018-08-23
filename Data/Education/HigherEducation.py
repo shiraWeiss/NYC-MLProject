@@ -1,4 +1,5 @@
 import overpy
+from Data.ExtractionUtils import *
 from Data.Apartments.Apartments import *
 import pandas as pd
 
@@ -9,7 +10,7 @@ class HigherEducation:
         self.api = overpy.Overpass()
         self.geolocator = Nominatim(user_agent="higher123", timeout=20)
         self.curr_radius = radius
-        self.rankings = pd.read_csv("Education/uni-rank-2.csv")
+        self.rankings = pd.read_csv("Data/Education/uni-rank-2.csv")
         self.rankings['SHORT'] = self.rankings['UNIVERSITY'].apply(getAbbreviation)
         self.hied_db = pd.DataFrame()
         self.pushHiEdDB(radius)
@@ -137,7 +138,7 @@ class HigherEducation:
     get the relevant csv.
     '''
     def loadHiEdDB(self):
-        name = "Education/hied_db" + str(self.curr_radius) + ".csv"
+        name = "Data/Education/hied_db" + str(self.curr_radius) + ".csv"
         try:
             self.hied_db = pd.read_csv(name)
         except FileNotFoundError:
