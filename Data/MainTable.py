@@ -20,7 +20,11 @@ class MainTable:
         self.parks = self._getParksDB()
 
         self.mergeAllDB()
+        self.main_db = selectCols(self.main_db, ['ADDRESS', 'ZIP CODE', 'HI_ED', 'HIGH_SCHOOLS',
+                                                 'BUS_STOPS', 'SUBWAY_STOPS', 'CRIMES', 'NUM_OF_PARKS',
+                                                 'AREA_OF_PARKS', 'SQR_FEET_PRICE'])
         self._normalizeFeatures()
+        self.main_csv = self.main_db.to_csv(path_or_buf="mainDB.csv", index=False)
 
     def getDB(self):
         return self.main_db
