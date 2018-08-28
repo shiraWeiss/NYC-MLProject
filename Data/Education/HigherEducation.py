@@ -120,7 +120,7 @@ class HigherEducation:
     This way, there is no need to run the function more than once for a specific radius.  
     '''
     def pushHiEdDB(self, radius):
-        name = "Education/hied_db" + str(radius) + ".csv"
+        name = "Data/Education/hied_db" + str(radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
