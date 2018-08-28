@@ -24,7 +24,7 @@ class Apartments:
         return self.data
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales.csv")
+        self.data = pd.read_csv("../Datasets/nyc-rolling-sales.csv")
         self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
         self._removeAptsWithMissingData()
         self._fixAddress()
@@ -58,9 +58,13 @@ class Apartments:
         self.data['ADDRESS'] = self.data.apply(self._getFullAddress, axis=1)
 
 def addressToCoordinates(address):
-    data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
-    address_data = data.loc[data['ADDRESS'] == address].iloc[0]
-    return float(address_data['LAT']), float(address_data['LON'])
+    data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
+    address_data = data.loc[data['ADDRESS'] == address]
+    if not address_data.empty:
+        address_data = address_data.iloc[0]
+        return float(address_data['LAT']), float(address_data['LON'])
+    else:
+        return 0, 0
 
 def addressToCoordinates_aux(address):
     try:
