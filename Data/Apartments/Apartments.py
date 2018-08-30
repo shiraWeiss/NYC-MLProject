@@ -11,6 +11,7 @@ class Apartments:
     def __init__(self):
         Apartments._instance = self
         self._createBaseDB()
+        # createCoordinatesFile()
 
     @staticmethod
     def getInstance():
@@ -23,7 +24,7 @@ class Apartments:
         return self.data
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
+        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales.csv")
         self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
         self._removeAptsWithMissingData()
         self._fixAddress()
@@ -47,7 +48,7 @@ class Apartments:
 
     def _normalizeApartsPrice(self):
         self.data['SQR_FEET_PRICE'] = self.data.apply(lambda row : float(row['SALE PRICE'])/float(row['LAND SQUARE FEET']), axis=1)
-        self.data = removeCols(self.data, 'SALE PRICE')
+        # self.data = removeCols(self.data, 'SALE PRICE')
 
     '''
     Remove the apartment's apartment number (in the building), and add NY borough  
@@ -59,11 +60,17 @@ class Apartments:
 def addressToCoordinates(address):
     data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
     address_data = data.loc[data['ADDRESS'] == address]
-    return float(address_data['LAT']), float(address_data['LON'])
+    if not address_data.empty:
+        address_data = address_data.iloc[0]
+        return float(address_data['LAT']), float(address_data['LON'])
+    else:
+        return 0, 0
 
 def addressToCoordinates_aux(address):
     try:
-        return geolocator.geocode(address)
+        coord =  geolocator.geocode(address)
+        if coord is None: return None
+        return coord.latitude, coord.longitude
     except GeocoderTimedOut:
         return addressToCoordinates_aux(address)
 
@@ -77,7 +84,7 @@ def createCoordinatesFile():
     apts.data[['LAT', 'LON']] = coord.apply(pd.Series)
     removeCols(apts.data, 'tmp')
 
-    apts.data.to_csv(path_or_buf="Datasets/nyc-rolling-sales-coord.csv", index=False)
+    apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
 
 def toBorough(borough_num):
     if borough_num == 1:

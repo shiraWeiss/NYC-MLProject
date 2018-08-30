@@ -26,7 +26,6 @@ class MainTable:
         return self.main_db
 
     def mergeAllDB(self):
-        #  merge the crimes table
         self.main_db = self.main_db.merge(self.crimes, on='ZIP CODE', how='left').fillna(value=0)
         self.main_db = self.main_db.merge(self.transport, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.hi_ed, on='ADDRESS', how='left')
@@ -34,30 +33,37 @@ class MainTable:
         self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left').fillna(value=0)
 
     def _getAptsDB(self):
+        print("MainTable: Initializing Apartments...")
         extractor = Apartments.getInstance()
         return extractor.getAptsData()
 
     def _getCrimesDB(self):
+        print("MainTable: Initializing Crimes...")
         extractor = Crimes()
         return extractor.getData()
 
     def _getTransportDB(self):
+        print("MainTable: Initializing Transport...")
         extractor = PublicTransport(1000)
         return extractor.getData()
 
     def _getParksDB(self):
+        print("MainTable: Initializing Parks...")
         extractor = Parks(radius=1, min_area=100)
         return extractor.getData()
 
     def _getHigherEducationDB(self):
+        print("MainTable: Initializing Higher Education...")
         extractor = HigherEducation(1200)
         return extractor.getData()
 
     def _getHighschoolsDB(self):
+        print("MainTable: Initializing High Schools...")
         extractor = HighSchools(1200)
         return extractor.getData()
 
     def _normalizeFeatures(self):
+        print("MainTable: MainTable: Normalizing...")
         self.main_db['HI_ED'] = self.main_db['HI_ED'].apply(self._normHiEd)
         self.main_db['HIGH_SCHOOLS'] = self._normalizeByMaxValue('HIGH_SCHOOLS')
         self.main_db['BUS_STOPS'] = self._normalizeByMaxValue('BUS_STOPS')

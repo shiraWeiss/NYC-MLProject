@@ -5,7 +5,6 @@ from Data.ExtractionUtils import *
 class PublicTransport:
     def __init__(self, radius):
         self.api = overpy.Overpass()
-        self.geolocator = Nominatim(user_agent="public123", timeout=20)
         self.curr_radius = radius
         self.pushTransportDB(radius)
         self.loadTransportDB()
