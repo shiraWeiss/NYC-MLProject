@@ -12,11 +12,11 @@ class Commercial:
     def commercialPresenceAroundAddress(self, address, radius):
         self.curr_radius = radius
         lat, lon = addressToCoordinates(address)
-        query_is = "area(around:" + str(radius) + "," + str(lat) + "," + str(lon) + ")[landuse=commercial];out;"
+        query_is = "node(around:" + str(radius) + "," + str(lat) + "," + str(lon) + ")[building=retail];out;"
         print(query_is)
         result = self.api.query(query_is)
-        return len(result.areas)
+        return len(result.nodes)
 
 if __name__ == '__main__':
-    com = Commercial(1000)
-    print(com.commercialPresenceAroundAddress('153 AVENUE B,  NYC, Manhattan', 1000))
+    com = Commercial(10000)
+    print(com.commercialPresenceAroundAddress('153 AVENUE B, NYC, Manhattan', 10000))
