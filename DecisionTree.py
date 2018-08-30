@@ -5,6 +5,7 @@ from sklearn.cross_validation import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeRegressor
 from Data.ExtractionUtils import removeCols
+from Data.MainTable import MainTable
 
 TEST_SIZE = 0.25
 CLASSIFIER = 0
@@ -13,7 +14,8 @@ PRICE_LEVEL_SIZE = 1000
 
 class DecisionTree:
     def __init__(self):
-        self.data = pd.read_csv("Data/mainDB.csv")
+        # self.data = pd.read_csv("Data/mainDB.csv")
+        self.data = MainTable().getDB()
         self.data = removeCols(self.data, 'ADDRESS')    # not a numeric feature - not relevant
         self._getDecisionTreeAccuracy()
 
@@ -26,7 +28,7 @@ class DecisionTree:
 
     def _getDecisionTreeAccuracy(self):
         # clf = DecisionTreeRegressor() todo: basic version
-        clf = DecisionTreeRegressor(max_depth=100, max_features=2, min_samples_leaf=10)
+        clf = DecisionTreeRegressor()
         training_set, test_set = train_test_split(self.data, test_size=TEST_SIZE)
         num_features = len(self.data.columns) - 1  # num of features without the apartment's price
 
