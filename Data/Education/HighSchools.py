@@ -9,7 +9,7 @@ class HighSchools:
         self.api = overpy.Overpass()
         self.geolocator = Nominatim(user_agent="highschools123", timeout=20)
         self.curr_radius = radius
-        self.full_report = pd.read_csv("regents_report.csv").head(100) # todo - removeeeee
+        self.full_report = pd.read_csv("Data/Education/regents_report.csv").head(100) # todo - removeeeee
         self._removeSchoolsWithNoMeanScore()
         self.merged_report = pd.DataFrame(columns=['School Name', 'Mean Expected Value'])
         self.generateMergedReport()
@@ -21,7 +21,7 @@ class HighSchools:
         self.full_report = self.full_report.loc[self.full_report['Mean Score'] != 's']
 
     def generateMergedReport(self):
-        name = "regents_merged" + str(self.curr_radius) +".csv"
+        name = "Data/Education/regents_merged" + str(self.curr_radius) +".csv"
         try:
             self.merged_report = pd.read_csv(name)
         except FileNotFoundError:
@@ -47,7 +47,6 @@ class HighSchools:
     def allSchoolsAroundAddress(self, address):
         lat, lon = addressToCoordinates(address)
         query_is = "node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=school];out;"
-        print(query_is)
         return self.api.query(query_is)
 
     def getMeanFromTable(self, name):
@@ -92,13 +91,11 @@ class HighSchools:
         best_rank = NO_RANK
         all = self.allSchoolsAroundAddress(address[0])
         for inst in all.nodes:
-            curr_name = str(inst.tags.get("name"))
-            # print(curr_name + ", " + getAbbreviation(curr_name) + ", Rank: " + str(self.getRankByNode(inst)))
             best_rank = max(self.getMeanByNode(inst), best_rank)
         return best_rank
 
     def pushHighschoolsDB(self, radius):
-        name = "high_schools_db" + str(radius) + ".csv"
+        name = "Data/Education/high_schools_db" + str(radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
@@ -110,7 +107,7 @@ class HighSchools:
             return
 
     def loadHighschoolsDB(self):
-        name = "high_schools_db" + str(self.curr_radius) + ".csv"
+        name = "Data/Education/high_schools_db" + str(self.curr_radius) + ".csv"
         try:
             self.high_schools_db = pd.read_csv(name)
         except FileNotFoundError:

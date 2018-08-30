@@ -46,8 +46,9 @@ class Parks:
     def _countAndSumParksInRadius(self, address, radius):
         try:
             location = geolocator.geocode(address)
+            if location is None: return 0, 0
         except GeocoderTimedOut:
-            self._countAndSumParksInRadius(address, radius)
+            return self._countAndSumParksInRadius(address, radius)
 
         apartment_coords = (location.latitude, location.longitude)
         counter = 0
