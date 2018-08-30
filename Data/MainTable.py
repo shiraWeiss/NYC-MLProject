@@ -63,7 +63,7 @@ class MainTable:
         return extractor.getData()
 
     def _normalizeFeatures(self):
-        print("MainTable: MainTable: Normalizing...")
+        print("MainTable: Normalizing...")
         self.main_db['HI_ED'] = self.main_db['HI_ED'].apply(self._normHiEd)
         self.main_db['HIGH_SCHOOLS'] = self._normalizeByMaxValue('HIGH_SCHOOLS')
         self.main_db['BUS_STOPS'] = self._normalizeByMaxValue('BUS_STOPS')

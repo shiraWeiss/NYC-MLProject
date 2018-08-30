@@ -103,8 +103,7 @@ class HighSchools:
             addresses['HIGH_SCHOOLS'] = addresses.apply(self.getBestHighschoolsAroundAddress, axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
-        else:
-            return
+
 
     def loadHighschoolsDB(self):
         name = "Data/Education/high_schools_db" + str(self.curr_radius) + ".csv"

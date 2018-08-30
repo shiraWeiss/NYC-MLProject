@@ -46,8 +46,6 @@ class PublicTransport:
             addresses['SUBWAY_STOPS'] = addresses.apply(self.subwayStopsAroundAddress, args=(radius,), axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
-        else:
-            return
 
     '''
     This function loads a csv into the field 'transport_db' in the class.

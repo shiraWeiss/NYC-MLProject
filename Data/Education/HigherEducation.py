@@ -128,8 +128,6 @@ class HigherEducation:
             addresses['HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
-        else:
-            return
 
     '''
     This function loads a csv into the field 'hied_db' in the class.

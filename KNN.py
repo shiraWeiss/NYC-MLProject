@@ -1,7 +1,7 @@
 from Data.MainTable import MainTable
 from sklearn import neighbors
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
+from Graphs.Graphs import *
 
 all_filters = [  'CRIMES',
                  'HI_ED',
@@ -28,7 +28,7 @@ def getKNNPredictionAndScore_andDisplay(X, y, n):
     y_pred = regressor.predict(X_test)
     train_score = regressor.score(X_train, y_train)
     test_score = regressor.score(X_test, y_test)
-    displayPredictionVsActual(y_pred, y.values, train_score, test_score,'Prediction', 'Actual Value', 'KNN Regression (with k=5)')
+    graph_PredictionVsActual(y_pred, y_test.values, 'Prediction', 'Actual Value', train_score, test_score, 'KNN Regression (with k=5)')
     return y_pred, test_score, train_score
 
 def getKNNPredictionAndScore(X, y, n):
@@ -40,16 +40,6 @@ def getKNNPredictionAndScore(X, y, n):
     test_score = regressor.score(X_test, y_test)
     return y_pred, test_score, train_score
 
-def displayPredictionVsActual(y_prediction, y_actual, x_label, y_label, train_score, test_score, graph_name):
-    print("Graph: Plotting...")
-    plt.figure()
-    plt.scatter(y_actual, y_prediction, s=20, edgecolor="black", c="darkorange", label="data")
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.title(graph_name)
-    plt.figtext('train score: ' + str(train_score) + ', test score: ' + str(test_score))
-    plt.legend()
-    plt.show()
 
 if __name__ == '__main__':
     # Get the base table
