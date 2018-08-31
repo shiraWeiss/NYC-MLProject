@@ -8,7 +8,6 @@ NO_RANK = 200
 class HigherEducation:
     def __init__(self, radius):
         self.api = overpy.Overpass()
-        self.geolocator = Nominatim(user_agent="higher123", timeout=20)
         self.curr_radius = radius
         self.rankings = pd.read_csv("Data/Education/uni-rank-2.csv")
         self.rankings['SHORT'] = self.rankings['UNIVERSITY'].apply(getAbbreviation)
@@ -128,8 +127,6 @@ class HigherEducation:
             addresses['HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
-        else:
-            return
 
     '''
     This function loads a csv into the field 'hied_db' in the class.

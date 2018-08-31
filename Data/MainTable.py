@@ -1,6 +1,7 @@
 from Data.Apartments.Apartments import *
 from Data.Crime.Crimes import Crimes
 from Data.Parks.Parks import Parks
+from Data.Noise.Noise import Noise
 from Data.PublicTransport.PublicTransport import PublicTransport
 from Data.Education.HigherEducation import HigherEducation
 from Data.Education.HighSchools import HighSchools
@@ -18,6 +19,7 @@ class MainTable:
         self.hi_ed = self._getHigherEducationDB()
         self.high_schools = self._getHighschoolsDB()
         self.parks = self._getParksDB()
+        self.noise = self._getNoiseDB()
 
         self.mergeAllDB()
         self._normalizeFeatures()
@@ -31,6 +33,7 @@ class MainTable:
         self.main_db = self.main_db.merge(self.hi_ed, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.high_schools, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left').fillna(value=0)
+        self.main_db = self.main_db.merge(self.noise, on='ZIP CODE', how='left').fillna(value=0)
 
     def _getAptsDB(self):
         print("MainTable: Initializing Apartments...")
@@ -62,8 +65,13 @@ class MainTable:
         extractor = HighSchools(1200)
         return extractor.getData()
 
+    def _getNoiseDB(self):
+        print("MainTable: Initializing Noise...")
+        extractor = Noise()
+        return extractor.getData()
+
     def _normalizeFeatures(self):
-        print("MainTable: MainTable: Normalizing...")
+        print("MainTable: Normalizing...")
         self.main_db['HI_ED'] = self.main_db['HI_ED'].apply(self._normHiEd)
         self.main_db['HIGH_SCHOOLS'] = self._normalizeByMaxValue('HIGH_SCHOOLS')
         self.main_db['BUS_STOPS'] = self._normalizeByMaxValue('BUS_STOPS')
@@ -71,20 +79,28 @@ class MainTable:
         self.main_db['CRIMES'] = self._normalizeByMaxValue('CRIMES')
         self.main_db['NUM_OF_PARKS'] = self._normalizeByMaxValue('NUM_OF_PARKS')
         self.main_db['AREA_OF_PARKS'] = self._normalizeByMaxValue('AREA_OF_PARKS')
-
-    def _normalizeByMaxValue(self, col):
-        return self.main_db[col].apply(self._standardNormalize, args=(self.main_db[col].max(),))
+        self.main_db['NOISE'] = self._inverseNormalizeByMaxValue('NOISE')
 
     def _normHiEd(self, score):
         return (HI_ED_FACTOR - float(score)) / HI_ED_FACTOR
+
+    def _normalizeByMaxValue(self, col):
+        return self.main_db[col].apply(self._standardNormalize, args=(self.main_db[col].max(),))
 
     def _standardNormalize(self, score, factor):
         if factor == 0:
             return 0
         return float(score) / float(factor)
 
+    def _inverseNormalizeByMaxValue(self, col):
+        return self.main_db[col].apply(self._inverseNormalize, args=(self.main_db[col].max(),))
+
+    def _inverseNormalize(self, score, factor):
+        if factor == 0:
+            return 1
+        return 1 - (float(score) / float(factor))
 
 if __name__ == "__main__":
-    createCoordinatesFile()
+    # createCoordinatesFile()
     creator = MainTable()
     print(creator.getDB())

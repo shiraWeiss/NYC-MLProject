@@ -1,7 +1,7 @@
 from Data.MainTable import MainTable
 from sklearn import neighbors
 from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
+from Graphs.Graphs import *
 
 all_filters = [  'CRIMES',
                  'HI_ED',
@@ -10,7 +10,8 @@ all_filters = [  'CRIMES',
                  'SUBWAY_STOPS',
                  'NUM_OF_PARKS',
                  'AREA_OF_PARKS',
-                 'SQR_FEET_PRICE' ]
+                 'SQR_FEET_PRICE',
+                 'NOISE' ]
 
 features =    [  'CRIMES',
                  'HI_ED',
@@ -18,21 +19,28 @@ features =    [  'CRIMES',
                  'BUS_STOPS',
                  'SUBWAY_STOPS',
                  'NUM_OF_PARKS',
-                 'AREA_OF_PARKS' ]
+                 'AREA_OF_PARKS',
+                 'NOISE' ]
 
-def getKNNPredictionAndScore_andDisplay(X, y, n):
+def getKNNPredictionAndScore_andDisplay(X, y, n, algorithm, weights):
     print("KNN: Predicting...")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 42,
+                                                        algorithm = algorithm, weights = weights)
     regressor = neighbors.KNeighborsRegressor(n_neighbors = n)
     regressor.fit(X_train, y_train)
     y_pred = regressor.predict(X_test)
     train_score = regressor.score(X_train, y_train)
     test_score = regressor.score(X_test, y_test)
-    displayPredictionVsActual(y_pred, y.values, train_score, test_score,'Prediction', 'Actual Value', 'KNN Regression (with k=5)')
+    # generate the graph for the current experiment
+    details = 'Algorithm: ' + algorithm + ', Weights: ' + weights
+    graph_PredictionVsActual(y_pred, y_test.values, 'Prediction', 'Actual Value',
+                             'KNN Regression (with k=' + str(n) +')', train_score, test_score, details)
+
     return y_pred, test_score, train_score
 
-def getKNNPredictionAndScore(X, y, n):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 42)
+def getKNNPredictionAndScore(X, y, n, algorithm, weights):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 42,
+                                                        algorithm = algorithm, weights = weights)
     regressor = neighbors.KNeighborsRegressor(n_neighbors = n)
     regressor.fit(X_train, y_train)
     y_pred = regressor.predict(X_test)
@@ -40,16 +48,6 @@ def getKNNPredictionAndScore(X, y, n):
     test_score = regressor.score(X_test, y_test)
     return y_pred, test_score, train_score
 
-def displayPredictionVsActual(y_prediction, y_actual, x_label, y_label, train_score, test_score, graph_name):
-    print("Graph: Plotting...")
-    plt.figure()
-    plt.scatter(y_actual, y_prediction, s=20, edgecolor="black", c="darkorange", label="data")
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    plt.title(graph_name)
-    plt.figtext('train score: ' + str(train_score) + ', test score: ' + str(test_score))
-    plt.legend()
-    plt.show()
 
 if __name__ == '__main__':
     # Get the base table
@@ -62,4 +60,17 @@ if __name__ == '__main__':
     y = df['SQR_FEET_PRICE']
 
     # Get predictions and display them
-    y_pred, test_score, train_score = getKNNPredictionAndScore_andDisplay(X, y, 5)
+    getKNNPredictionAndScore_andDisplay(X, y, 5, 'auto', 'uniform')
+    getKNNPredictionAndScore_andDisplay(X, y, 5, 'auto', 'distance')
+    getKNNPredictionAndScore_andDisplay(X, y, 7, 'auto', 'uniform')
+    getKNNPredictionAndScore_andDisplay(X, y, 7, 'auto', 'distance')
+    getKNNPredictionAndScore_andDisplay(X, y, 10, 'auto', 'uniform')
+    getKNNPredictionAndScore_andDisplay(X, y, 10, 'auto', 'distance')
+    getKNNPredictionAndScore_andDisplay(X, y, 15, 'auto', 'uniform')
+    getKNNPredictionAndScore_andDisplay(X, y, 15, 'auto', 'distance')
+    getKNNPredictionAndScore_andDisplay(X, y, 30, 'auto', 'uniform')
+    getKNNPredictionAndScore_andDisplay(X, y, 30, 'auto', 'distance')
+    getKNNPredictionAndScore_andDisplay(X, y, 65, 'auto', 'uniform')
+    getKNNPredictionAndScore_andDisplay(X, y, 65, 'auto', 'distance')
+    getKNNPredictionAndScore_andDisplay(X, y, 100, 'auto', 'uniform')
+    getKNNPredictionAndScore_andDisplay(X, y, 100, 'auto', 'distance')

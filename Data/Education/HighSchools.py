@@ -7,7 +7,6 @@ NO_RANK = -200
 class HighSchools:
     def __init__(self, radius):
         self.api = overpy.Overpass()
-        self.geolocator = Nominatim(user_agent="highschools123", timeout=20)
         self.curr_radius = radius
         self.full_report = pd.read_csv("Data/Education/regents_report.csv").head(100) # todo - removeeeee
         self._removeSchoolsWithNoMeanScore()
@@ -103,8 +102,7 @@ class HighSchools:
             addresses['HIGH_SCHOOLS'] = addresses.apply(self.getBestHighschoolsAroundAddress, axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
-        else:
-            return
+
 
     def loadHighschoolsDB(self):
         name = "Data/Education/high_schools_db" + str(self.curr_radius) + ".csv"
