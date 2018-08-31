@@ -56,12 +56,12 @@ class PublicTransport:
     def loadTransportDB(self):
         name = "Data/PublicTransport/transport_db" + str(self.curr_radius) + ".csv"
         try:
-            self.transport_db = pd.read_csv(name)
+            self.data = pd.read_csv(name)
         except FileNotFoundError:
             print("Dor says: No transport_db with that radius in here. Run pushTransportDB() first.")
 
     def getData(self):
-        return self.transport_db
+        return self.data
 
 
 if __name__ == "__main__":
