@@ -20,7 +20,6 @@ The closer your points are to the line y=x, the better.
 '''
 def graph_PredictionVsActual(y_prediction, y_actual, x_label, y_label, graph_name, train_score=None, test_score=None, more_text=None):
     print("Graph: Plotting...")
-
     # text boxes
     fig, ax = plt.subplots()
     if train_score is not None:

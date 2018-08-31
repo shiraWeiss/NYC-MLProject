@@ -1,5 +1,4 @@
 import pandas as pd
-
 from geopy.geocoders import Nominatim
 geolocator = Nominatim(user_agent="utils123", timeout=5)
 TEST_LINES = 500
