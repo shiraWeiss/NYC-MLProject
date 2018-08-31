@@ -1,4 +1,3 @@
-from Data.ExtractionUtils import *
 from Data.Apartments.Apartments import *
 
 class Noise:

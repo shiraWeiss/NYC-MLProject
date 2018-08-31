@@ -11,7 +11,8 @@ all_filters = [  'CRIMES',
                  'NUM_OF_PARKS',
                  'AREA_OF_PARKS',
                  'SQR_FEET_PRICE',
-                 'NOISE' ]
+                 'NOISE',
+                 'HEALTH' ]
 
 features =    [  'CRIMES',
                  'HI_ED',
@@ -20,7 +21,8 @@ features =    [  'CRIMES',
                  'SUBWAY_STOPS',
                  'NUM_OF_PARKS',
                  'AREA_OF_PARKS',
-                 'NOISE' ]
+                 'NOISE',
+                 'HEALTH' ]
 
 def getKNNPredictionAndScore_andDisplay(X, y, n, algorithm, weights):
     print("KNN: Predicting...")
