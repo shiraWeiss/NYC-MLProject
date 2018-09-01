@@ -8,7 +8,6 @@ NO_RANK = 200
 class HigherEducation:
     def __init__(self, radius):
         self.api = overpy.Overpass()
-        self.geolocator = Nominatim(user_agent="higher123", timeout=20)
         self.curr_radius = radius
         self.rankings = pd.read_csv("Data/Education/uni-rank-2.csv")
         self.rankings['SHORT'] = self.rankings['UNIVERSITY'].apply(getAbbreviation)

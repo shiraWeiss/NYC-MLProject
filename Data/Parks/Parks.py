@@ -20,10 +20,29 @@ class Parks:
     min area: what is the minimal area that we consider a legit park.
     """
     def __init__(self, radius, min_area):
+        self.loadParksDB(radius, min_area)
+
+    '''
+    Load the parks DB from csv, or create it if necessary
+    '''
+    def loadParksDB(self, radius, min_area):
+        try:
+            self.data = pd.read_csv("Data/Parks/parks_db" + str(radius) + ".csv")
+        except FileNotFoundError:
+           self.pushParksDB(radius)
+
+    '''
+    Create the parks DB and save it to CSV
+    '''
+
+    def pushParksDB(self, radius, min_area):
         self.parks_data = self._extractParksData(min_area)  # parks_data doesn't contain the relation to the apartments
-        self.data = Apartments.getInstance().data['ADDRESS'].to_frame()  # data will contain a mapping from each apartment to
-        parks_and_areas = self.data['ADDRESS'].apply(self._countAndSumParksInRadius, args=(radius,))
+        self.data = Apartments.getInstance().data[
+            'ADDRESS'].to_frame()  # data will contain a mapping from each apartment to
+        parks_and_areas = self.data.apply(self._countAndSumParksInRadius, args=(radius,))
         self.data[['NUM_OF_PARKS', 'AREA_OF_PARKS']] = parks_and_areas.apply(pd.Series)
+        self.parks_data.to_csv(path_or_buf="Data/Parks/parks_db" + str(radius) + ".csv", index=False)
+
 
     '''
     @return the data with the following fields:
@@ -43,13 +62,9 @@ class Parks:
     @return - a tuple of number of parks around the given address and their total area.
     '''
 
-    def _countAndSumParksInRadius(self, address, radius):
-        try:
-            location = geolocator.geocode(address)
-        except GeocoderTimedOut:
-            self._countAndSumParksInRadius(address, radius)
-
-        apartment_coords = (location.latitude, location.longitude)
+    def _countAndSumParksInRadius(self, apartment_row, radius):
+        apartment_coords = apartment_row['LAT']
+        apartment_coords += apartment_row['LON']
         counter = 0
         total_area = 0
         for park in self.parks_data.iterrows():

@@ -19,13 +19,6 @@ class DecisionTree:
         self.data = removeCols(self.data, 'ADDRESS')    # not a numeric feature - not relevant
         self._getDecisionTreeAccuracy()
 
-    # '''
-    # For the decision tree the classifications should be categories, not float numbers (prices).
-    # This functions splits the apartments prices into ranges
-    # '''
-    # def _changePricesToCatagories(self):
-    #     self.data['SQR_FEET_PRICE'] = self.data['SQR_FEET_PRICE'].apply(lambda price: self._toCatagory(price))
-
     def _getDecisionTreeAccuracy(self):
         # clf = DecisionTreeRegressor() todo: basic version
         clf = DecisionTreeRegressor()
