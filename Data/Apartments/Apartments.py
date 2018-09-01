@@ -1,6 +1,7 @@
 import re
 
-from geopy.exc import GeocoderTimedOut
+import numpy as np
+from geopy.exc import GeocoderTimedOut, GeocoderQuotaExceeded
 
 from Data.ExtractionUtils import *
 
@@ -11,7 +12,7 @@ class Apartments:
     def __init__(self):
         Apartments._instance = self
         self._createBaseDB()
-        # createCoordinatesFile()
+        createCoordinatesFile()
 
     @staticmethod
     def getInstance():
@@ -48,7 +49,7 @@ class Apartments:
 
     def _normalizeApartsPrice(self):
         self.data['SQR_FEET_PRICE'] = self.data.apply(lambda row : float(row['SALE PRICE'])/float(row['LAND SQUARE FEET']), axis=1)
-        # self.data = removeCols(self.data, 'SALE PRICE')
+        self.data = removeCols(self.data, 'SALE PRICE')
 
     '''
     Remove the apartment's apartment number (in the building), and add NY borough  
@@ -100,13 +101,31 @@ over and over again so geolocator would succeed. Way to go, geolocator...
 '''
 def createApartmentsTableWithCoordinates():
     apts = Apartments.getInstance()
-    coord = apts.data['ADDRESS'].apply(getAddressToCoordinates)
-    # get the coordinates to a new column, so we remove rows without valid coordinates from the data
-    apts.data['tmp'] = coord
-    apts.data = removeRowsWithEmptyCol(apts.data, 'tmp')
-    apts.data[['LAT', 'LON']] = coord.apply(pd.Series)
-    removeCols(apts.data, 'tmp')
-    apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
+    apts.data['LOCATION'] = None
+    i=0
+    max_line = 0
+    try:
+        for line in apts.data.iterrows():
+            line_index = line[0]
+            line_data = line[1]
+            apts.data['LOCATION'][line_index] = addressToCoordinates_aux(line_data['ADDRESS'])
+            i+=1
+            max_line = max(int(line_data['ROW']), max_line)
+
+        apts.data = removeRowsWithEmptyCol(apts.data, 'LOCATION')
+        apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
+        apts.data = removeCols(apts.data, 'LOCATION')
+        print("Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
+        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
+
+    except GeocoderQuotaExceeded:
+        apts.data = removeRowsWithEmptyCol(apts.data, 'LOCATION')
+        apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
+        apts.data = removeCols(apts.data, 'LOCATION')
+        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
+        print("Too many requests.. :(\n"
+              "Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
+        exit(0)
 
 
 def toBorough(borough_num):
