@@ -44,7 +44,7 @@ class HighSchools:
     @return - a 'Result' type (from overpy) with all the nodes found.
     '''
     def allSchoolsAroundAddress(self, address):
-        lat, lon = addressToCoordinates(address)
+        lat, lon = fromTableAddressToCoordinates(address)
         query_is = "node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=school];out;"
         return self.api.query(query_is)
 
@@ -69,7 +69,7 @@ class HighSchools:
             rank = by_public
 
         if rank == NO_RANK:
-            closest_school = self.schoolByMatch(name, 12)
+            closest_school = self.schoolByMatch(name, 90)
             if closest_school is not None:
                 by_closest = self.getMeanFromTable(closest_school)
                 if by_closest != NO_RANK:
@@ -114,23 +114,21 @@ class HighSchools:
     def getData(self):
         return self.high_schools_db
 
-    def schoolByMatch(self, in_school, match_len):
+    def schoolByMatch(self, in_school, match_percent):
         max_match = 0
         max_school = str()
         for t_school in self.merged_report['School Name']:
-            curr_match = substringMaxMatchLen(t_school, in_school)
+            curr_match = substringMatchPercentage(t_school, in_school)
             if curr_match > max_match:
                 max_match = curr_match
                 max_school = t_school
 
-        if max_match > match_len:
+        if max_match > match_percent:
             return max_school
         else:
             return None
 
 if __name__ == '__main__':
-    res = geolocator.geocode('Orchard Collegiate Academy')
-    print(res.latitude + ", " + res.longitude)
     hs = HighSchools(5000)
     # print(hs.merged_report)
     print(hs.high_schools_db)
