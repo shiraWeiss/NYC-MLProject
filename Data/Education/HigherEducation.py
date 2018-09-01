@@ -22,6 +22,8 @@ class HigherEducation:
     '''
     def allHiEdAroundAddress(self, address):
         lat, lon = fromTableAddressToCoordinates(address)
+        if lat == 0 and lon == 0:
+            return 0
         query_is = "(node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=college];" \
                     "node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=university];" \
                                                                                   ");out;"

@@ -45,6 +45,8 @@ class HighSchools:
     '''
     def allSchoolsAroundAddress(self, address):
         lat, lon = fromTableAddressToCoordinates(address)
+        if lat == 0 and lon == 0:
+            return 0
         query_is = "node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=school];out;"
         return self.api.query(query_is)
 
