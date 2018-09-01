@@ -14,7 +14,7 @@ class Health:
         return self.data
 
     def closestHealthToAddress(self, address):
-        in_coords = addressToCoordinates(address[0])  # change to 'in_coords = addressToCoordinates(address[0])' after loacl testing
+        in_coords = fromTableAddressToCoordinates(address[0])  # change to 'in_coords = addressToCoordinates(address[0])' after loacl testing
         min_dist = 10000
         for curr_lat, curr_lon in zip(self.data['Facility Latitude'], self.data['Facility Longitude']):
             curr_coord = (curr_lat, curr_lon)

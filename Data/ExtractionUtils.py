@@ -73,6 +73,9 @@ def substringMaxMatchLen_aux(str1, str2):
 def substringMaxMatchLen(str1, str2):
     return max(substringMaxMatchLen_aux(str1, str2), substringMaxMatchLen_aux(str2, str1))
 
+def substringMatchPercentage(str1, str2):
+    return ( substringMaxMatchLen(str1, str2) / len(str2) ) * 100
+
 if __name__ == '__main__':
     str1 = 'dor'
     str2 = 'Fdor'

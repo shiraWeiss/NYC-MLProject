@@ -1,5 +1,4 @@
 import overpy
-from Data.ExtractionUtils import *
 from Data.Apartments.Apartments import *
 import pandas as pd
 
@@ -22,7 +21,7 @@ class HigherEducation:
     @return - a 'Result' type (from overpy) with all the nodes found.
     '''
     def allHiEdAroundAddress(self, address):
-        lat, lon = addressToCoordinates(address)
+        lat, lon = fromTableAddressToCoordinates(address)
         query_is = "(node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=college];" \
                     "node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=university];" \
                                                                                   ");out;"
