@@ -5,7 +5,6 @@ from Data.ExtractionUtils import *
 class PublicTransport:
     def __init__(self, radius):
         self.api = overpy.Overpass()
-        self.geolocator = Nominatim(user_agent="public123", timeout=20)
         self.curr_radius = radius
         self.pushTransportDB(radius)
         self.loadTransportDB()
@@ -15,7 +14,7 @@ class PublicTransport:
     '''
     def busStopsAroundAddress(self, address, radius):
         self.curr_radius = radius
-        lat, lon = addressToCoordinates(address[0])
+        lat, lon = fromTableAddressToCoordinates(address[0])
         query_is = "node(around:" + str(radius) + "," + str(lat) + "," + str(lon) + ")[highway=bus_stop];out;"
         result = self.api.query(query_is)
         return len(result.nodes)
@@ -25,7 +24,7 @@ class PublicTransport:
     '''
     def subwayStopsAroundAddress(self, address, radius):
         self.curr_radius = radius
-        lat, lon = addressToCoordinates(address[0])
+        lat, lon = fromTableAddressToCoordinates(address[0])
         query_is = "node(around:" + str(radius) + "," + str(lat) + "," + str(lon) + ")[station = subway];out;"
         result = self.api.query(query_is)
         return len(result.nodes)
@@ -47,8 +46,6 @@ class PublicTransport:
             addresses['SUBWAY_STOPS'] = addresses.apply(self.subwayStopsAroundAddress, args=(radius,), axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
-        else:
-            return
 
     '''
     This function loads a csv into the field 'transport_db' in the class.
@@ -59,12 +56,12 @@ class PublicTransport:
     def loadTransportDB(self):
         name = "Data/PublicTransport/transport_db" + str(self.curr_radius) + ".csv"
         try:
-            self.transport_db = pd.read_csv(name)
+            self.data = pd.read_csv(name)
         except FileNotFoundError:
             print("Dor says: No transport_db with that radius in here. Run pushTransportDB() first.")
 
     def getData(self):
-        return self.transport_db
+        return self.data
 
 
 if __name__ == "__main__":

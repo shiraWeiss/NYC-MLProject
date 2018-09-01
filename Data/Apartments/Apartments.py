@@ -25,9 +25,8 @@ class Apartments:
         return self.data
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("../Datasets/nyc-rolling-sales.csv")
-        self.data = self.data.iloc[26572:]
-        # self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
+        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales.csv")
+        self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
         self._removeAptsWithMissingData()
         self._fixAddress()
         self._normalizeApartsPrice()
@@ -59,22 +58,48 @@ class Apartments:
         self.data['ADDRESS'] = self.data['ADDRESS'].apply(lambda address: re.sub(r',.*', "", address))
         self.data['ADDRESS'] = self.data.apply(self._getFullAddress, axis=1)
 
-def addressToCoordinates(address):
-    data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
-    address_data = data.loc[data['ADDRESS'] == address]
-    return float(address_data['LAT']), float(address_data['LON'])
+'''
+This function fetches the coordinates from 'nyc-rolling-sales-coord.csv' after createApartmentsTableWithCoordinates()
+built the file.
+Notice! if this is called BEFORE createApartmentsTableWithCoordinates - it's not good. This probably wouldn't
+happne, but still.
 
-def addressToCoordinates_aux(address):
+:)
+'''
+def fromTableAddressToCoordinates(address):
+    data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
+    address_data = data.loc[data['ADDRESS'] == address]
+    if not address_data.empty:
+        address_data = address_data.iloc[0]
+        return float(address_data['LAT']), float(address_data['LON'])
+    else:
+        return 0, 0
+
+
+'''
+Use geolocator to find coordinates by address.
+
+@:param: address - the full address (with NYC etc.) in 'nyc-rolling-sales.csv' format, as string.
+
+@:return: coordinates in lat, lon format.
+'''
+def getAddressToCoordinates(address):
     try:
-        coord = geolocator.geocode(address)
-        if coord is None:
-            return None
+        coord =  geolocator.geocode(address)
+        if coord is None: return None
         return coord.latitude, coord.longitude
     except GeocoderTimedOut:
-        return addressToCoordinates_aux(address)
+        return getAddressToCoordinates(address)
 
+'''
+Creates the world famous "nyc-rolling-sales-coord.csv" file with coordinates for each apartment.
+~~~~~~~     "nyc-rolling-sales-coord.csv" - Get One NOW! in the Closest Store to You    ~~~~~~~
 
-def createCoordinatesFile():
+This basically needs to be run once on the entire Apartments DB, but as Shira is doing right now - it's run
+over and over again so geolocator would succeed. Way to go, geolocator...
+
+'''
+def createApartmentsTableWithCoordinates():
     apts = Apartments.getInstance()
     apts.data['LOCATION'] = None
     i=0
@@ -115,5 +140,4 @@ def toBorough(borough_num):
     return 'Staten island'
 
 if __name__ == '__main__':
-    print("good luck\n")
-    a = Apartments()
+    createApartmentsTableWithCoordinates()

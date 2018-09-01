@@ -1,5 +1,4 @@
 import overpy
-from Data.ExtractionUtils import *
 from Data.Apartments.Apartments import *
 import pandas as pd
 
@@ -22,7 +21,7 @@ class HigherEducation:
     @return - a 'Result' type (from overpy) with all the nodes found.
     '''
     def allHiEdAroundAddress(self, address):
-        lat, lon = addressToCoordinates(address)
+        lat, lon = fromTableAddressToCoordinates(address)
         query_is = "(node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=college];" \
                     "node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=university];" \
                                                                                   ");out;"
@@ -119,7 +118,7 @@ class HigherEducation:
     This way, there is no need to run the function more than once for a specific radius.  
     '''
     def pushHiEdDB(self, radius):
-        name = "Education/hied_db" + str(radius) + ".csv"
+        name = "Data/Education/hied_db" + str(radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
@@ -127,8 +126,6 @@ class HigherEducation:
             addresses['HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
             self.curr_radius = radius
-        else:
-            return
 
     '''
     This function loads a csv into the field 'hied_db' in the class.
