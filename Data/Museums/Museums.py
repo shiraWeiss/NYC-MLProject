@@ -28,7 +28,7 @@ class Museums:
     def pushMuseumsDB(self, radius):
         self.museums = self._extractMuseumsData()
         self.data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv") # todo use the Apartments instead
-        self.data['museums_in_radius'] = self.data.apply(self._countMuseumsInRadius, args=(radius,), axis=1)
+        self.data['MUSEUMS'] = self.data.apply(self._countMuseumsInRadius, args=(radius,), axis=1)
         self.data.to_csv(path_or_buf="museums_db" + str(radius) + ".csv", index=False)
 
 
@@ -65,3 +65,6 @@ class Museums:
         museums = museums.apply(pd.Series)
         museums.columns = ['LAT', 'LON']
         return museums
+
+    def getData(self):
+        return self.data
