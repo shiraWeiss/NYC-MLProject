@@ -48,7 +48,7 @@ class Museums:
     '''
     def _extractMuseumsData(self):
         museums = pd.read_csv("../../museums.csv")
-        museums = museums.head(TEST_LINES)  # todo remove!! short only for testing
+        # museums = museums.head(TEST_LINES)  # todo remove!! short only for testing
         museums = self._getMuseumsCoords(museums)
         return museums
 

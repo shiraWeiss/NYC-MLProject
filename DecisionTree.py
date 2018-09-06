@@ -20,7 +20,6 @@ class DecisionTree:
         self._getDecisionTreeAccuracy()
 
     def _getDecisionTreeAccuracy(self):
-        # clf = DecisionTreeRegressor() todo: basic version
         clf = DecisionTreeRegressor()
         training_set, test_set = train_test_split(self.data, test_size=TEST_SIZE)
         num_features = len(self.data.columns) - 1  # num of features without the apartment's price
