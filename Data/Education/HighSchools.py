@@ -8,7 +8,7 @@ class HighSchools:
     def __init__(self, radius):
         self.api = overpy.Overpass()
         self.curr_radius = radius
-        self.full_report = pd.read_csv("Data/Education/regents_report.csv").head(100) # todo - removeeeee
+        self.full_report = pd.read_csv("Data/Education/regents_report.csv")  #  .head(100) # todo - removeeeee
         self._removeSchoolsWithNoMeanScore()
         self.merged_report = pd.DataFrame(columns=['School Name', 'Mean Expected Value'])
         self.generateMergedReport()
@@ -129,8 +129,3 @@ class HighSchools:
             return max_school
         else:
             return None
-
-if __name__ == '__main__':
-    hs = HighSchools(5000)
-    # print(hs.merged_report)
-    print(hs.high_schools_db)

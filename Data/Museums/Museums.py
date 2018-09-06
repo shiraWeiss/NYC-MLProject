@@ -37,6 +37,7 @@ class Museums:
         for museum_row in self.museums.iterrows():
             museum_coord = museum_row[1]['LAT'], museum_row[1]['LON']
             apartment_coord = apartment_location['LAT'], apartment_location['LON']
+            if apartment_coord == (0, 0): return 0      #   not to insert noise to the table
             dist = geodesic(apartment_coord, museum_coord).kilometers
             if dist <= radius:
                 counter += 1
@@ -48,7 +49,7 @@ class Museums:
     '''
     def _extractMuseumsData(self):
         museums = pd.read_csv("../../museums.csv")
-        museums = museums.head(TEST_LINES)  # todo remove!! short only for testing
+        # museums = museums.head(TEST_LINES)  # todo remove!! short only for testing
         museums = self._getMuseumsCoords(museums)
         return museums
 
@@ -64,7 +65,3 @@ class Museums:
         museums = museums.apply(pd.Series)
         museums.columns = ['LAT', 'LON']
         return museums
-
-
-if __name__ == '__main__':
-    a = Museums()

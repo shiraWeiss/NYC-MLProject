@@ -46,7 +46,7 @@ class MainTable:
     def _getAptsDB(self):
         print("MainTable: Initializing Apartments...")
         extractor = Apartments.getInstance()
-        return extractor.getAptsData()
+        return extractor.getData()
 
     def _getCrimesDB(self):
         print("MainTable: Initializing Crimes...")
@@ -113,8 +113,3 @@ class MainTable:
         if factor == 0:
             return 1
         return 1 - (float(score) / float(factor))
-
-if __name__ == "__main__":
-    # createCoordinatesFile()
-    creator = MainTable()
-    print(creator.getDB())

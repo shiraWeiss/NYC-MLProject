@@ -12,7 +12,7 @@ class Apartments:
     def __init__(self):
         Apartments._instance = self
         self._createBaseDB()
-        createCoordinatesFile()
+        # createApartmentsTableWithCoordinates()
 
     @staticmethod
     def getInstance():
@@ -21,12 +21,12 @@ class Apartments:
         return Apartments._instance
 
 
-    def getAptsData(self):
+    def getData(self):
         return self.data
 
     def _createBaseDB(self):
         self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales.csv")
-        self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
+        self.data = self.data   #  .head(TEST_LINES)
         self._removeAptsWithMissingData()
         self._fixAddress()
         self._normalizeApartsPrice()
@@ -108,7 +108,7 @@ def createApartmentsTableWithCoordinates():
         for line in apts.data.iterrows():
             line_index = line[0]
             line_data = line[1]
-            apts.data['LOCATION'][line_index] = addressToCoordinates_aux(line_data['ADDRESS'])
+            apts.data['LOCATION'][line_index] = getAddressToCoordinates(line_data['ADDRESS'])
             i+=1
             max_line = max(int(line_data['ROW']), max_line)
 
@@ -116,13 +116,13 @@ def createApartmentsTableWithCoordinates():
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
         print("Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
-        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
+        apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
 
     except GeocoderQuotaExceeded:
         apts.data = removeRowsWithEmptyCol(apts.data, 'LOCATION')
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
-        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
+        apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
         print("Too many requests.. :(\n"
               "Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
         exit(0)
@@ -138,6 +138,3 @@ def toBorough(borough_num):
     if borough_num == 4:
         return 'Queens'
     return 'Staten island'
-
-if __name__ == '__main__':
-    createApartmentsTableWithCoordinates()
