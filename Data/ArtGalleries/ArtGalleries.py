@@ -20,21 +20,19 @@ class ArtGalleries:
     '''
     def pushGalleriesDB(self, radius):
         self.galleries = self._extractGalleriesData()
-        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")  # todo use the Apartments instead
-        self.data['galleries_in_radius'] = self.data.apply(self._countGalleriesInRadius, args=(radius,), axis=1)
+        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv") #   .head(TEST_LINES) # todo use the Apartments instead
+        self.data['GALLERIES'] = self.data.apply(self._countGalleriesInRadius, args=(radius,), axis=1)
         self.data.to_csv(path_or_buf="galleries_db" + str(radius) + ".csv", index=False)
 
 
     def _extractGalleriesData(self):
         galleries = pd.read_csv("Data/ArtGalleries/ART_GALLERY.csv")
-        # galleries = galleries.head(TEST_LINES)  # todo remove!! short only for testing
+        galleries = galleries   #   .head(TEST_LINES)  # todo remove!! short only for testing
         galleries = self._getGalleriesCoords(galleries)
         return galleries
 
 
-    '''
-    @return: data frame with each museum's coordinates under 'MUSEUM_COORDS' field
-    '''
+
     def _getGalleriesCoords(self, galleries):
         galleries = galleries['the_geom']
         # get from 'the_geom' only the coordinate

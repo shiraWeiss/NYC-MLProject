@@ -26,7 +26,7 @@ class Apartments:
 
     def _createBaseDB(self):
         self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales.csv")
-        self.data = self.data   #  .head(TEST_LINES)
+        self.data = self.data   #   .head(TEST_LINES)
         self._removeAptsWithMissingData()
         self._fixAddress()
         self._normalizeApartsPrice()
