@@ -4,6 +4,31 @@ from geopy.extra.rate_limiter import RateLimiter
 geolocator = Nominatim(user_agent="utils123")
 geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
 
+all_filters = [  'CRIMES',
+                 'HI_ED',
+                 'HIGH_SCHOOLS',
+                 'BUS_STOPS',
+                 'SUBWAY_STOPS',
+                 'NUM_OF_PARKS',
+                 'AREA_OF_PARKS',
+                 'SQR_FEET_PRICE',
+                 'NOISE',
+                 'HEALTH',
+                 'GALLERIES',
+                 'MUSEUMS' ]
+
+features =    [  'CRIMES',
+                 'HI_ED',
+                 'HIGH_SCHOOLS',
+                 'BUS_STOPS',
+                 'SUBWAY_STOPS',
+                 'NUM_OF_PARKS',
+                 'AREA_OF_PARKS',
+                 'NOISE',
+                 'HEALTH',
+                 'GALLERIES',
+                 'MUSEUMS' ]
+
 TEST_LINES = 100
 
 def removeRowsWithEmptyCol(df, col):
