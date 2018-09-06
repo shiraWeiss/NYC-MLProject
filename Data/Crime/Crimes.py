@@ -12,7 +12,7 @@ class Crimes:
 
     def __init__(self):
         self.data = pd.read_csv("Data/Crime/crimes.csv")
-        self.data = self.data.head(TEST_LINES)  # todo remove!! short only for testing
+        # self.data = self.data.head(TEST_LINES)  # todo remove!! short only for testing
         self.keepOnlyCoordsCols()
         self.coordsToZipcode()
         # add the number of crimes column to the zip codes
