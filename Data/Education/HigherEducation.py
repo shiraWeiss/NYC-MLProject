@@ -144,9 +144,3 @@ class HigherEducation:
 
     def getData(self):
         return self.hied_db
-
-
-if __name__ == '__main__':
-    hi_ed = HigherEducation(1200)
-    hi_ed.curr_radius = 1500
-    print(hi_ed.hied_db)

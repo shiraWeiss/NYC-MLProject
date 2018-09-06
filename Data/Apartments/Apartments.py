@@ -21,7 +21,7 @@ class Apartments:
         return Apartments._instance
 
 
-    def getAptsData(self):
+    def getData(self):
         # return self.data
         return pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
 
@@ -120,13 +120,13 @@ def createApartmentsTableWithCoordinates():
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
         print("Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
-        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
+        apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
 
     except GeocoderQuotaExceeded:
         apts.data = removeRowsWithEmptyCol(apts.data, 'LOCATION')
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
-        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
+        apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
         print("Too many requests.. :(\n"
               "Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
         exit(0)
@@ -142,6 +142,3 @@ def toBorough(borough_num):
     if borough_num == 4:
         return 'Queens'
     return 'Staten island'
-
-if __name__ == '__main__':
-    a = Apartments()

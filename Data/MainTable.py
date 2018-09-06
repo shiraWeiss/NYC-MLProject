@@ -6,6 +6,7 @@ from Data.PublicTransport.PublicTransport import PublicTransport
 from Data.Education.HigherEducation import HigherEducation
 from Data.Education.HighSchools import HighSchools
 from Data.Health.Health import Health
+from Data.ArtGalleries.ArtGalleries import ArtGalleries
 
 HI_ED_FACTOR = 152
 HIGH_SCHOOLS_FACTOR = 100
@@ -22,11 +23,9 @@ class MainTable:
         self.parks = self._getParksDB()
         self.noise = self._getNoiseDB()
         self.health = self._getHealthDB()
+        self.galleries = self._getGalleriesDB()
 
         self.mergeAllDB()
-        self.main_db = selectCols(self.main_db, ['ADDRESS', 'ZIP CODE', 'HI_ED', 'HIGH_SCHOOLS',
-                                                 'BUS_STOPS', 'SUBWAY_STOPS', 'CRIMES', 'NUM_OF_PARKS',
-                                                 'AREA_OF_PARKS', 'SQR_FEET_PRICE'])
         self._normalizeFeatures()
         self.main_csv = self.main_db.to_csv(path_or_buf="mainDB.csv", index=False)
 
@@ -41,12 +40,12 @@ class MainTable:
         self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left').fillna(value=0)
         self.main_db = self.main_db.merge(self.noise, on='ZIP CODE', how='left').fillna(value=0)
         self.main_db = self.main_db.merge(self.health, on='ADDRESS', how='left')
-
+        self.main_db = self.main_db.merge(self.galleries, on='ADDRESS', how='left')
 
     def _getAptsDB(self):
         print("MainTable: Initializing Apartments...")
         extractor = Apartments.getInstance()
-        return extractor.getAptsData()
+        return extractor.getData()
 
     def _getCrimesDB(self):
         print("MainTable: Initializing Crimes...")
@@ -83,6 +82,11 @@ class MainTable:
         extractor = Health()
         return extractor.getData()
 
+    def _getGalleriesDB(self):
+        print("MainTable: Initializing Galleries...")
+        extractor = ArtGalleries()
+        return extractor.getData()
+
     def _normalizeFeatures(self):
         print("MainTable: Normalizing...")
         self.main_db['HI_ED'] = self.main_db['HI_ED'].apply(self._normHiEd)
@@ -113,8 +117,3 @@ class MainTable:
         if factor == 0:
             return 1
         return 1 - (float(score) / float(factor))
-
-if __name__ == "__main__":
-    # createCoordinatesFile()
-    creator = MainTable()
-    print(creator.getDB())

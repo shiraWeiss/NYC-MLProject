@@ -66,10 +66,3 @@ class PublicTransport:
 
     def getData(self):
         return self.data
-
-
-if __name__ == "__main__":
-    pt = PublicTransport()
-    pt.pushTransportDB(1000)
-    # pt.curr_radius = 500
-    pt.loadTransportDB()
