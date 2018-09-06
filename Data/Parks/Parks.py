@@ -1,5 +1,4 @@
 from geopy.distance import geodesic
-from geopy.exc import GeocoderTimedOut
 
 from Data.Apartments.Apartments import Apartments
 from Data.ExtractionUtils import *
@@ -17,7 +16,7 @@ def _acresToSquareMeter(acre):
 class Parks:
     """
     @param radius: in what radius from the apartment should we look for parks.
-    min area: what is the minimal area that we consider a legit park.
+    min area: what is the minimal area that we consider a legit park (in square meters).
     """
     def __init__(self, radius, min_area):
         self.loadParksDB(radius, min_area)
@@ -27,9 +26,9 @@ class Parks:
     '''
     def loadParksDB(self, radius, min_area):
         try:
-            self.data = pd.read_csv("Data/Parks/parks_db" + str(radius) + ".csv")
+            self.data = pd.read_csv("../Parks/parks_db" + str(radius) + ".csv")
         except FileNotFoundError:
-           self.pushParksDB(radius)
+           self.pushParksDB(radius, min_area)
 
     '''
     Create the parks DB and save it to CSV
@@ -37,9 +36,8 @@ class Parks:
 
     def pushParksDB(self, radius, min_area):
         self.parks_data = self._extractParksData(min_area)  # parks_data doesn't contain the relation to the apartments
-        self.data = Apartments.getInstance().data[
-            'ADDRESS'].to_frame()  # data will contain a mapping from each apartment to
-        parks_and_areas = self.data.apply(self._countAndSumParksInRadius, args=(radius,))
+        self.data = Apartments.getInstance().getAptsData()[['LAT', 'LON']] # data will contain a mapping from each apartment to
+        parks_and_areas = self.data.apply(self._countAndSumParksInRadius, args=(radius,), axis=1)
         self.data[['NUM_OF_PARKS', 'AREA_OF_PARKS']] = parks_and_areas.apply(pd.Series)
         self.parks_data.to_csv(path_or_buf="Data/Parks/parks_db" + str(radius) + ".csv", index=False)
 
@@ -49,8 +47,8 @@ class Parks:
     PARK_NAME, LOCATION, PARK_AREA, where 'LOCATION' is the coordinates of the park
     '''
     def _extractParksData(self, min_area):
-        self.parks_data = pd.read_csv("Data/Parks/parksProperties.csv")
-        self.parks_data = self.parks_data.head(TEST_LINES)  # todo remove!! short only for testing
+        self.parks_data = pd.read_csv("../Parks/parksProperties.csv")
+        # self.parks_data = self.parks_data.head(TEST_LINES)  # todo remove!! short only for testing
         self._keepRelevantParksData()
         self._filterOutParksSmallerThan(min_area)
         return self.parks_data
@@ -59,33 +57,32 @@ class Parks:
         return self.data
 
     '''
-    @return - a tuple of number of parks around the given address and their total area.
-    '''
-
-    def _countAndSumParksInRadius(self, apartment_row, radius):
-        apartment_coords = apartment_row['LAT']
-        apartment_coords += apartment_row['LON']
-        counter = 0
-        total_area = 0
-        for park in self.parks_data.iterrows():
-            dist = self._getShortestDistFromApartment(apartment_coords, park[1]['COORDS'])
-            if dist <= radius:
-                counter += 1
-                total_area += park[1]['PARK_AREA']
-        return counter, total_area
-
-    '''
     Opens the parks csv and adds the addresses of the apartments.
     @return the data frame with apartments parm name, park location and park area 
     '''
     def _keepRelevantParksData(self):
-        data = self.parks_data.head(TEST_LINES)  # todo remove!! short only for testing
-        data = data[data.CLASS == 'PARK']  # keep only the parks
+        data = self.parks_data
+        data = data[data.CLASS == 'PARK']  # keep only the parks (there are other classes in this dataset
         # select the park name, shape (coordinates that surround the park) and area
         data = selectCols(data, ['NAME311', 'the_geom', 'ACRES'])
-        data.columns = ['PARK_NAME', 'COORDS', 'PARK_AREA']
+        data.columns = ['PARK_NAME', 'PARK_COORD', 'PARK_AREA']
         data['PARK_AREA'] = data['PARK_AREA'].to_frame().apply(_acresToSquareMeter, axis=1)  # change area units to meter^2
         self.parks_data = data
+
+    '''
+        @return - a tuple of number of parks around the given address and their total area.
+        '''
+
+    def _countAndSumParksInRadius(self, apartment_row, radius):
+        apartment_coords = apartment_row['LAT'], apartment_row['LON']
+        counter = 0
+        total_area = 0
+        for park in self.parks_data.iterrows():
+            dist = self._getShortestDistFromApartment(apartment_coords, park[1]['PARK_COORD'])
+            if dist <= radius:
+                counter += 1
+                total_area += park[1]['PARK_AREA']
+        return counter, total_area
 
     def _filterOutParksSmallerThan(self, min_area):
         self.parks_data = self.parks_data[self.parks_data.PARK_AREA >= min_area]
@@ -104,3 +101,6 @@ class Parks:
             distance = geodesic(apartment_coord, coord.split(' ')[::-1]).kilometers
             shortest = min(shortest, distance)
         return shortest
+
+if __name__ == '__main__':
+    a = Parks(1, 300)
