@@ -2,27 +2,7 @@ from Data.MainTable import MainTable
 from sklearn import neighbors
 from sklearn.model_selection import train_test_split
 from Graphs.Graphs import *
-
-all_filters = [  'CRIMES',
-                 'HI_ED',
-                 'HIGH_SCHOOLS',
-                 'BUS_STOPS',
-                 'SUBWAY_STOPS',
-                 'NUM_OF_PARKS',
-                 'AREA_OF_PARKS',
-                 'SQR_FEET_PRICE',
-                 'NOISE',
-                 'HEALTH' ]
-
-features =    [  'CRIMES',
-                 'HI_ED',
-                 'HIGH_SCHOOLS',
-                 'BUS_STOPS',
-                 'SUBWAY_STOPS',
-                 'NUM_OF_PARKS',
-                 'AREA_OF_PARKS',
-                 'NOISE',
-                 'HEALTH' ]
+from Data.ExtractionUtils import *
 
 def getKNNPredictionAndScore_andDisplay(X, y, n, algorithm, weights):
     print("KNN: Predicting...")

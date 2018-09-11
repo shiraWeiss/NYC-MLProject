@@ -15,6 +15,8 @@ class PublicTransport:
     def busStopsAroundAddress(self, address, radius):
         self.curr_radius = radius
         lat, lon = fromTableAddressToCoordinates(address[0])
+        if lat == 0 and lon == 0:
+            return 0
         query_is = "node(around:" + str(radius) + "," + str(lat) + "," + str(lon) + ")[highway=bus_stop];out;"
         result = self.api.query(query_is)
         return len(result.nodes)
@@ -25,6 +27,8 @@ class PublicTransport:
     def subwayStopsAroundAddress(self, address, radius):
         self.curr_radius = radius
         lat, lon = fromTableAddressToCoordinates(address[0])
+        if lat == 0 and lon == 0:
+            return 0
         query_is = "node(around:" + str(radius) + "," + str(lat) + "," + str(lon) + ")[station = subway];out;"
         result = self.api.query(query_is)
         return len(result.nodes)
@@ -62,10 +66,3 @@ class PublicTransport:
 
     def getData(self):
         return self.data
-
-
-if __name__ == "__main__":
-    pt = PublicTransport()
-    pt.pushTransportDB(1000)
-    # pt.curr_radius = 500
-    pt.loadTransportDB()

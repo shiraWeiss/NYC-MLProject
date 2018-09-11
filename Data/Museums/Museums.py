@@ -28,7 +28,7 @@ class Museums:
     def pushMuseumsDB(self, radius):
         self.museums = self._extractMuseumsData()
         self.data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv") # todo use the Apartments instead
-        self.data['museums_in_radius'] = self.data.apply(self._countMuseumsInRadius, args=(radius,), axis=1)
+        self.data['MUSEUMS'] = self.data.apply(self._countMuseumsInRadius, args=(radius,), axis=1)
         self.data.to_csv(path_or_buf="museums_db" + str(radius) + ".csv", index=False)
 
 
@@ -37,6 +37,7 @@ class Museums:
         for museum_row in self.museums.iterrows():
             museum_coord = museum_row[1]['LAT'], museum_row[1]['LON']
             apartment_coord = apartment_location['LAT'], apartment_location['LON']
+            if apartment_coord == (0, 0): return 0      #   not to insert noise to the table
             dist = geodesic(apartment_coord, museum_coord).kilometers
             if dist <= radius:
                 counter += 1
@@ -65,6 +66,5 @@ class Museums:
         museums.columns = ['LAT', 'LON']
         return museums
 
-
-if __name__ == '__main__':
-    a = Museums()
+    def getData(self):
+        return self.data
