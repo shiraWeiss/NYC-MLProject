@@ -3,6 +3,7 @@ from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
 geolocator = Nominatim(user_agent="utils123")
 geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
+from math import sin, cos, sqrt, atan2, radians
 
 TEST_LINES = 1000
 
@@ -78,6 +79,21 @@ def substringMaxMatchLen(str1, str2):
 
 def substringMatchPercentage(str1, str2):
     return ( substringMaxMatchLen(str1, str2) / len(str2) ) * 100
+
+
+def calcDistBetweenCoords(coord1, coord2):
+    lat1 = radians(float(coord1[0]))
+    lon1 = radians(float(coord1[1]))
+    lat2 = radians(float(coord2[0]))
+    lon2 = radians(float(coord2[1]))
+    R = 6373.0  # earth radius
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = (sin(dlat / 2)) ** 2 + cos(lat1) * cos(lat2) * (sin(dlon / 2)) ** 2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+    return R * c  + 0.04586793507 # 0.04586793507 is the difference from the geopy output according to our experiments
 
 if __name__ == '__main__':
     str1 = 'dor'

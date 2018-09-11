@@ -14,7 +14,7 @@ SUBWAY_FACTOR = 20  #  bus & subway factors are *really* subject to change
 
 class MainTable:
     def __init__(self):
-        self.main_db = self._getAptsDB()
+        self.main_db = self._getDB()
         self.crimes = self._getCrimesDB()
         self.transport = self._getTransportDB()
         self.hi_ed = self._getHigherEducationDB()
@@ -43,7 +43,7 @@ class MainTable:
         self.main_db = self.main_db.merge(self.health, on='ADDRESS', how='left')
 
 
-    def _getAptsDB(self):
+    def _getDB(self):
         print("MainTable: Initializing Apartments...")
         extractor = Apartments.getInstance()
         return extractor.getAptsData()
