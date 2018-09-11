@@ -11,8 +11,8 @@ class Apartments:
 
     def __init__(self):
         Apartments._instance = self
-        # self._createBaseDB()
-        # createApartmentsTableWithCoordinates()
+        self._createBaseDB()
+        createApartmentsTableWithCoordinates()
 
     @staticmethod
     def getInstance():
@@ -26,9 +26,8 @@ class Apartments:
         return pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
-        # self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
-        self.data = self.data.iloc[41383:] # todo not sure it's like this
+        self.data = pd.read_csv("../Datasets/nyc-rolling-sales.csv")
+        self.data = self.data.iloc[74026:]
         self._removeAptsWithMissingData()
         self._fixAddress()
         self._normalizeApartsPrice()
@@ -108,8 +107,6 @@ def createApartmentsTableWithCoordinates():
     max_line = 0
     try:
         for line in apts.data.iterrows():
-            if i == 1000:
-                break
             line_index = line[0]
             line_data = line[1]
             apts.data['LOCATION'][line_index] = getAddressToCoordinates(line_data['ADDRESS'])
