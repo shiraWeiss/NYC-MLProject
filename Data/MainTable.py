@@ -17,12 +17,12 @@ SUBWAY_FACTOR = 20  #  bus & subway factors are *really* subject to change
 
 class MainTable:
     def __init__(self):
-        self.main_db        = self._getAptsDB()
+        self.main_db        = self._getApartmentsDB()
         self.crimes         = self._getCrimesDB()
         self.transport      = self._getTransportDB()
         self.hi_ed          = self._getHigherEducationDB()
         self.high_schools   = self._getHighschoolsDB()
-        # self.parks          = self._getParksDB()
+        self.parks          = self._getParksDB()
         self.noise          = self._getNoiseDB()
         self.health         = self._getHealthDB()
         self.galleries      = self._getGalleriesDB()
@@ -66,7 +66,7 @@ class MainTable:
     # ------------------------------------ get DBs ------------------------------------ #
     # --------------------------------------------------------------------------------- #
 
-    def _getDB(self):
+    def _getApartmentsDB(self):
         print("MainTable: Initializing Apartments...")
         extractor = Apartments.getInstance()
         return extractor.getData()

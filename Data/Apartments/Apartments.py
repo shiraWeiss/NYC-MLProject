@@ -11,7 +11,7 @@ class Apartments:
     def __init__(self):
         Apartments._instance = self
         try:
-            self.data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
+            self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
         except FileNotFoundError:
             self._createBaseDB()
             createApartmentsTableWithCoordinates()
