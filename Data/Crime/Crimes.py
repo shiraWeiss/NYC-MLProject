@@ -11,12 +11,15 @@ class Crimes:
     Y_COORD = 'Longitude'
 
     def __init__(self):
-        self.data = pd.read_csv("Data/Crime/crimes.csv")
-        # self.data = self.data.head(TEST_LINES)  # todo remove!! short only for testing
-        self.keepOnlyCoordsCols()
-        self.coordsToZipcode()
-        # add the number of crimes column to the zip codes
-        self.data = self.data.groupby(['ZIP CODE']).size().reset_index(name='CRIMES')
+        try:
+            self.data = pd.read_csv("Data/Datasets/crimesDB.csv")
+        except FileNotFoundError:
+            self.data = pd.read_csv("Data/Crime/crimes.csv")
+            self.keepOnlyCoordsCols()
+            self.coordsToZipcode()
+            # add the number of crimes column to the zip codes
+            self.data = self.data.groupby(['ZIP CODE']).size().reset_index(name='CRIMES')
+            self.data.to_csv(path_or_buf="Data/Datasets/crimes.csv", index=False)
 
     def keepOnlyCoordsCols(self):
         self.data = self.data[[self.X_COORD, self.Y_COORD]]

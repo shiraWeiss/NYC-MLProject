@@ -14,7 +14,7 @@ class Museums:
     '''
     def loadMuseumsDB(self, radius):
         try:
-            self.data = pd.read_csv("museums_db" + str(radius) + ".csv")
+            self.data = pd.read_csv("Data/Datasets/museums_db" + str(radius) + ".csv")
         except FileNotFoundError:
             self.pushMuseumsDB(radius)
 
@@ -26,7 +26,7 @@ class Museums:
         self.museums = self._extractMuseumsData()
         self.data = Apartments.getInstance().getApartmentsDB()
         self.data['museums_in_radius'] = self.data.apply(self._countMuseumsInRadius, args=(radius,), axis=1)
-        self.data.to_csv(path_or_buf="museums_db" + str(radius) + ".csv", index=False)
+        self.data.to_csv(path_or_buf="Data/Datasets/museums_db" + str(radius) + ".csv", index=False)
 
 
     def _countMuseumsInRadius(self, apartment_location, radius):
