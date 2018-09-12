@@ -1,16 +1,13 @@
 import re
-
 import pandas as pd
-from geopy.distance import geodesic
-from geopy.exc import GeocoderTimedOut
 
-from Data.Apartments import Apartments
-from Data.ExtractionUtils import geocode, geolocator, TEST_LINES, selectCols
+from Data.Apartments.Apartments import Apartments
+from Data.ExtractionUtils import geocode, geolocator, TEST_LINES, selectCols, calcDistBetweenCoords
 
 
 class Museums:
-    def __init__(self):
-        self.loadMuseumsDB(1)
+    def __init__(self, radius):
+        self.loadMuseumsDB(radius)
 
     '''
     Load the parks DB from csv, or create it if necessary
@@ -27,7 +24,7 @@ class Museums:
     '''
     def pushMuseumsDB(self, radius):
         self.museums = self._extractMuseumsData()
-        self.data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv") # todo use the Apartments instead
+        self.data = Apartments.getInstance().getApartmentsDB()
         self.data['museums_in_radius'] = self.data.apply(self._countMuseumsInRadius, args=(radius,), axis=1)
         self.data.to_csv(path_or_buf="museums_db" + str(radius) + ".csv", index=False)
 
@@ -37,7 +34,7 @@ class Museums:
         for museum_row in self.museums.iterrows():
             museum_coord = museum_row[1]['LAT'], museum_row[1]['LON']
             apartment_coord = apartment_location['LAT'], apartment_location['LON']
-            dist = geodesic(apartment_coord, museum_coord).kilometers
+            dist = calcDistBetweenCoords(apartment_coord, museum_coord)
             if dist <= radius:
                 counter += 1
         return counter
@@ -47,8 +44,7 @@ class Museums:
     MUSEUM_COORDS
     '''
     def _extractMuseumsData(self):
-        museums = pd.read_csv("../../museums.csv")
-        # museums = museums.head(TEST_LINES)  # todo remove!! short only for testing
+        museums = pd.read_csv("museums.csv")
         museums = self._getMuseumsCoords(museums)
         return museums
 
@@ -67,4 +63,4 @@ class Museums:
 
 
 if __name__ == '__main__':
-    a = Museums()
+    a = Museums(5)

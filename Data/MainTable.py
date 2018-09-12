@@ -46,7 +46,7 @@ class MainTable:
     def _getDB(self):
         print("MainTable: Initializing Apartments...")
         extractor = Apartments.getInstance()
-        return extractor.getAptsData()
+        return extractor.getApartmentsDB()
 
     def _getCrimesDB(self):
         print("MainTable: Initializing Crimes...")
