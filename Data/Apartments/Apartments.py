@@ -1,5 +1,4 @@
 import re
-
 import numpy as np
 from geopy.exc import GeocoderTimedOut, GeocoderQuotaExceeded
 
@@ -11,8 +10,11 @@ class Apartments:
 
     def __init__(self):
         Apartments._instance = self
-        self._createBaseDB()
-        createApartmentsTableWithCoordinates()
+        try:
+            self.data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
+        except FileNotFoundError:
+            self._createBaseDB()
+            createApartmentsTableWithCoordinates()
 
     @staticmethod
     def getInstance():
@@ -21,13 +23,11 @@ class Apartments:
         return Apartments._instance
 
 
-    def getData(self):
-        # return self.data
-        return pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
+    def getApartmentsDB(self):
+        return self.data
 
     def _createBaseDB(self):
         self.data = pd.read_csv("../Datasets/nyc-rolling-sales.csv")
-        self.data = self.data.iloc[74026:]
         self._removeAptsWithMissingData()
         self._fixAddress()
         self._normalizeApartsPrice()
@@ -68,7 +68,7 @@ happne, but still.
 :)
 '''
 def fromTableAddressToCoordinates(address):
-    data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
+    data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
     address_data = data.loc[data['ADDRESS'] == address]
     if not address_data.empty:
         address_data = address_data.iloc[0]
@@ -91,7 +91,6 @@ def getAddressToCoordinates(address):
         return coord.latitude, coord.longitude
     except GeocoderTimedOut:
         return getAddressToCoordinates(address)
-
 '''
 Creates the world famous "nyc-rolling-sales-coord.csv" file with coordinates for each apartment.
 ~~~~~~~     "nyc-rolling-sales-coord.csv" - Get One NOW! in the Closest Store to You    ~~~~~~~
@@ -117,13 +116,13 @@ def createApartmentsTableWithCoordinates():
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
         print("Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
-        apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
+        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
 
     except GeocoderQuotaExceeded:
         apts.data = removeRowsWithEmptyCol(apts.data, 'LOCATION')
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
-        apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
+        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
         print("Too many requests.. :(\n"
               "Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
         exit(0)
@@ -139,3 +138,6 @@ def toBorough(borough_num):
     if borough_num == 4:
         return 'Queens'
     return 'Staten island'
+
+if __name__ == '__main__':
+    a = Apartments()

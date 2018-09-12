@@ -12,10 +12,9 @@ parks.
 def _acresToSquareMeter(acre):
     return 4046.85642 * acre
 
-
 class Parks:
     """
-    @param radius: in what radius from the apartment should we look for parks.
+    @param radius: in what radius from the apartment should we look for parks (km).
     min area: what is the minimal area that we consider a legit park (in square meters).
     """
     def __init__(self, radius, min_area):
@@ -26,7 +25,7 @@ class Parks:
     '''
     def loadParksDB(self, radius, min_area):
         try:
-            self.data = pd.read_csv("../Parks/parks_db" + str(radius) + ".csv")
+            self.data = pd.read_csv("parks_radius" + str(radius) + "_area" + str(min_area) + ".csv")
         except FileNotFoundError:
            self.pushParksDB(radius, min_area)
 
@@ -36,11 +35,14 @@ class Parks:
 
     def pushParksDB(self, radius, min_area):
         self.parks_data = self._extractParksData(min_area)  # parks_data doesn't contain the relation to the apartments
-        self.data = Apartments.getInstance().getAptsData()[['LAT', 'LON']] # data will contain a mapping from each apartment to
+        self.data = Apartments.getInstance().getApartmentsDB()[['LAT', 'LON']] # data will contain a mapping from each apartment to
+
+        self.data = self.data.iloc[25613:]
+        self.data = selectCols(self.data, ['ADDRESS', 'LAT', 'LON'])
+        self.iteration = 0
         parks_and_areas = self.data.apply(self._countAndSumParksInRadius, args=(radius,), axis=1)
         self.data[['NUM_OF_PARKS', 'AREA_OF_PARKS']] = parks_and_areas.apply(pd.Series)
-        self.parks_data.to_csv(path_or_buf="Data/Parks/parks_db" + str(radius) + ".csv", index=False)
-
+        self.data.to_csv(path_or_buf="../Parks/parks_radius" + str(radius) + "_area" + str(min_area) + ".csv", index=False)
 
     '''
     @return the data with the following fields:
@@ -48,7 +50,7 @@ class Parks:
     '''
     def _extractParksData(self, min_area):
         self.parks_data = pd.read_csv("../Parks/parksProperties.csv")
-        # self.parks_data = self.parks_data.head(TEST_LINES)  # todo remove!! short only for testing
+        self.parks_data = self.parks_data
         self._keepRelevantParksData()
         self._filterOutParksSmallerThan(min_area)
         return self.parks_data
@@ -74,6 +76,8 @@ class Parks:
         '''
 
     def _countAndSumParksInRadius(self, apartment_row, radius):
+        self.iteration += 1
+        print(self.iteration)
         apartment_coords = apartment_row['LAT'], apartment_row['LON']
         counter = 0
         total_area = 0
@@ -95,12 +99,11 @@ class Parks:
     def _getShortestDistFromApartment(self, apartment_coord, park_coords):
         shortest = 10000
         coords_list = park_coords.replace('MULTIPOLYGON', '').replace(')', '').replace('(', '').split(',')
-        coords_list = coords_list[:5] # todo - remove! for tests
         for coord in coords_list:
             # for some reason 'coord' is in reversed order, so [::-1] flip it back to the wanted order
-            distance = geodesic(apartment_coord, coord.split(' ')[::-1]).kilometers
+            distance = calcDistBetweenCoords(coord.split(' ')[::-1], apartment_coord)
             shortest = min(shortest, distance)
         return shortest
 
 if __name__ == '__main__':
-    a = Parks(1, 300)
+    a = Parks(1,100)
