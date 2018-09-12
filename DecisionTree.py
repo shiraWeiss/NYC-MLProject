@@ -14,7 +14,6 @@ PRICE_LEVEL_SIZE = 1000
 
 class DecisionTree:
     def __init__(self):
-        # self.data = pd.read_csv("Data/mainDB.csv")
         self.data = MainTable().getDB()
         self.data = removeCols(self.data, 'ADDRESS')    # not a numeric feature - not relevant
         self._getDecisionTreeAccuracy()

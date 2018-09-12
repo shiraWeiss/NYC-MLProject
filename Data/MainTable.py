@@ -19,13 +19,13 @@ class MainTable:
     def __init__(self):
         self.main_db        = self._getApartmentsDB()
         self.crimes         = self._getCrimesDB()
-        self.transport      = self._getTransportDB()
-        self.hi_ed          = self._getHigherEducationDB()
-        self.high_schools   = self._getHighschoolsDB()
+        # self.transport      = self._getTransportDB()
+        # self.hi_ed          = self._getHigherEducationDB()
+        # self.high_schools   = self._getHighschoolsDB()
         self.parks          = self._getParksDB()
-        self.noise          = self._getNoiseDB()
-        self.health         = self._getHealthDB()
-        self.galleries      = self._getGalleriesDB()
+        # self.noise          = self._getNoiseDB()
+        # self.health         = self._getHealthDB()
+        # self.galleries      = self._getGalleriesDB()
         self.museums        = self._getMuseumsDB()
         self.building_age   = self._getAgeDB()
 
@@ -38,27 +38,28 @@ class MainTable:
 
     def mergeAllDB(self):
         self.main_db = self.main_db.merge(self.crimes, on='ZIP CODE', how='left').fillna(value=0)
-        self.main_db = self.main_db.merge(self.transport, on='ADDRESS', how='left')
-        self.main_db = self.main_db.merge(self.hi_ed, on='ADDRESS', how='left')
-        self.main_db = self.main_db.merge(self.high_schools, on='ADDRESS', how='left')
-        # self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left').fillna(value=0)
-        self.main_db = self.main_db.merge(self.noise, on='ZIP CODE', how='left').fillna(value=0)
-        self.main_db = self.main_db.merge(self.health, on='ADDRESS', how='left')
-        self.main_db = self.main_db.merge(self.galleries, on='ADDRESS', how='left')
+        # self.main_db = self.main_db.merge(self.transport, on='ADDRESS', how='left')
+        # self.main_db = self.main_db.merge(self.hi_ed, on='ADDRESS', how='left')
+        # self.main_db = self.main_db.merge(self.high_schools, on='ADDRESS', how='left')
+        self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left').fillna(value=0)
+        # self.main_db = self.main_db.merge(self.noise, on='ZIP CODE', how='left').fillna(value=0)
+        # self.main_db = self.main_db.merge(self.health, on='ADDRESS', how='left')
+        # self.main_db = self.main_db.merge(self.galleries, on='ADDRESS', how='left')
+        self.main_db = self.main_db.merge(self.museums, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.building_age, on='ADDRESS', how='left')
 
     def _normalizeFeatures(self):
         print("MainTable: Normalizing...")
-        self.main_db['HI_ED']           = self.main_db['HI_ED'].apply(self._normHiEd)
-        self.main_db['HIGH_SCHOOLS']    = self._normalizeByMaxValue('HIGH_SCHOOLS')
-        self.main_db['BUS_STOPS']       = self._normalizeByMaxValue('BUS_STOPS')
-        self.main_db['SUBWAY_STOPS']    = self._normalizeByMaxValue('SUBWAY_STOPS')
+        # self.main_db['HI_ED']           = self.main_db['HI_ED'].apply(self._normHiEd)
+        # self.main_db['HIGH_SCHOOLS']    = self._normalizeByMaxValue('HIGH_SCHOOLS')
+        # self.main_db['BUS_STOPS']       = self._normalizeByMaxValue('BUS_STOPS')
+        # self.main_db['SUBWAY_STOPS']    = self._normalizeByMaxValue('SUBWAY_STOPS')
         self.main_db['CRIMES']          = self._normalizeByMaxValue('CRIMES')
-        # self.main_db['NUM_OF_PARKS']  = self._normalizeByMaxValue('NUM_OF_PARKS')
-        # self.main_db['AREA_OF_PARKS'] = self._normalizeByMaxValue('AREA_OF_PARKS')
-        self.main_db['NOISE']           = self._inverseNormalizeByMaxValue('NOISE')
-        self.main_db['HEALTH']          = self._inverseNormalizeByMaxValue('HEALTH')
-        self.main_db['GALLERIES']       = self._normalizeByMaxValue('GALLERIES')
+        self.main_db['NUM_OF_PARKS']  = self._normalizeByMaxValue('NUM_OF_PARKS')
+        self.main_db['AREA_OF_PARKS'] = self._normalizeByMaxValue('AREA_OF_PARKS')
+        # self.main_db['NOISE']           = self._inverseNormalizeByMaxValue('NOISE')
+        # self.main_db['HEALTH']          = self._inverseNormalizeByMaxValue('HEALTH')
+        # self.main_db['GALLERIES']       = self._normalizeByMaxValue('GALLERIES')
         self.main_db['MUSEUMS']         = self._normalizeByMaxValue('MUSEUMS')
         self.main_db['BUILDING_AGE']    = self._inverseNormalizeByMaxValue('BUILDING_AGE')
 
@@ -69,7 +70,8 @@ class MainTable:
     def _getApartmentsDB(self):
         print("MainTable: Initializing Apartments...")
         extractor = Apartments.getInstance()
-        return extractor.getData()
+        return selectCols(extractor.getData(), ['ADDRESS', 'BOROUGH', 'ZIP CODE']) # todo Dor did it somewhere I cant find -
+        # need to update
 
     def _getCrimesDB(self):
         print("MainTable: Initializing Crimes...")
@@ -113,7 +115,7 @@ class MainTable:
 
     def _getMuseumsDB(self):
         print("MainTable: Initializing Museums...")
-        extractor = Museums()
+        extractor = Museums(1)
         return extractor.getData()
 
     def _getAgeDB(self):

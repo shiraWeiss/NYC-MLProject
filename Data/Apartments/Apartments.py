@@ -23,7 +23,7 @@ class Apartments:
         return Apartments._instance
 
 
-    def getApartmentsDB(self):
+    def getData(self):
         return self.data
 
     def _createBaseDB(self):

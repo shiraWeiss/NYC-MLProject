@@ -15,6 +15,7 @@ class Museums:
     def loadMuseumsDB(self, radius):
         try:
             self.data = pd.read_csv("Data/Datasets/museums_db" + str(radius) + ".csv")
+            self.data = selectCols(self.data, ['ADDRESS', 'museums_in_radius'])
         except FileNotFoundError:
             self.pushMuseumsDB(radius)
 
@@ -24,7 +25,8 @@ class Museums:
     '''
     def pushMuseumsDB(self, radius):
         self.museums = self._extractMuseumsData()
-        self.data = Apartments.getInstance().getApartmentsDB()
+        self.data = Apartments.getInstance().getData()
+        self.data = selectCols(self.data, ['ADDRESS', 'LAT', 'LON'])
         self.data['museums_in_radius'] = self.data.apply(self._countMuseumsInRadius, args=(radius,), axis=1)
         self.data.to_csv(path_or_buf="Data/Datasets/museums_db" + str(radius) + ".csv", index=False)
 

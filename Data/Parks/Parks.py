@@ -26,6 +26,7 @@ class Parks:
     def loadParksDB(self, radius, min_area):
         try:
             self.data = pd.read_csv("parks_radius" + str(radius) + "_area" + str(min_area) + ".csv")
+            self.data = selectCols(self.data, ['ADDRESS', 'NUM_OF_PARKS', 'AREA_OF_PARKS'])
         except FileNotFoundError:
            self.pushParksDB(radius, min_area)
 
@@ -35,7 +36,7 @@ class Parks:
 
     def pushParksDB(self, radius, min_area):
         self.parks_data = self._extractParksData(min_area)  # parks_data doesn't contain the relation to the apartments
-        self.data = Apartments.getInstance().getApartmentsDB()[['LAT', 'LON']] # data will contain a mapping from each apartment to
+        self.data = Apartments.getInstance().getData()[['LAT', 'LON']] # data will contain a mapping from each apartment to
 
         self.data = self.data.iloc[25613:]
         self.data = selectCols(self.data, ['ADDRESS', 'LAT', 'LON'])
