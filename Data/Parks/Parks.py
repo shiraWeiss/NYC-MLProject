@@ -25,7 +25,7 @@ class Parks:
     '''
     def loadParksDB(self, radius, min_area):
         try:
-            self.data = pd.read_csv("parks_radius" + str(radius) + "_area" + str(min_area) + ".csv")
+            self.data = pd.read_csv(DATASETS_PATH + "/parks_radius" + str(radius) + "_area" + str(min_area) + ".csv")
             self.data = selectCols(self.data, ['ADDRESS', 'NUM_OF_PARKS', 'AREA_OF_PARKS'])
         except FileNotFoundError:
            self.pushParksDB(radius, min_area)
@@ -43,14 +43,14 @@ class Parks:
         self.iteration = 0
         parks_and_areas = self.data.apply(self._countAndSumParksInRadius, args=(radius,), axis=1)
         self.data[['NUM_OF_PARKS', 'AREA_OF_PARKS']] = parks_and_areas.apply(pd.Series)
-        self.data.to_csv(path_or_buf="../Parks/parks_radius" + str(radius) + "_area" + str(min_area) + ".csv", index=False)
+        self.data.to_csv(path_or_buf=DATASETS_PATH + "/parks_radius" + str(radius) + "_area" + str(min_area) + ".csv", index=False)
 
     '''
     @return the data with the following fields:
     PARK_NAME, LOCATION, PARK_AREA, where 'LOCATION' is the coordinates of the park
     '''
     def _extractParksData(self, min_area):
-        self.parks_data = pd.read_csv("../Parks/parksProperties.csv")
+        self.parks_data = pd.read_csv("Data/Parks/parksProperties.csv")
         self.parks_data = self.parks_data
         self._keepRelevantParksData()
         self._filterOutParksSmallerThan(min_area)

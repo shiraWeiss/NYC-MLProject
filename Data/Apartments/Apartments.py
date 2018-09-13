@@ -68,7 +68,7 @@ happne, but still.
 :)
 '''
 def fromTableAddressToCoordinates(address):
-    data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
+    data = pd.read_csv(DATASETS_PATH + "/nyc-rolling-sales-coord.csv")
     address_data = data.loc[data['ADDRESS'] == address]
     if not address_data.empty:
         address_data = address_data.iloc[0]
@@ -116,13 +116,13 @@ def createApartmentsTableWithCoordinates():
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
         print("Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
-        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
+        apts.data.to_csv(path_or_buf=DATASETS_PATH + "/nyc-rolling-sales-coord2.csv", index=False)
 
     except GeocoderQuotaExceeded:
         apts.data = removeRowsWithEmptyCol(apts.data, 'LOCATION')
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
-        apts.data.to_csv(path_or_buf="../Datasets/nyc-rolling-sales-coord2.csv", index=False)
+        apts.data.to_csv(path_or_buf=DATASETS_PATH + "/nyc-rolling-sales-coord2.csv", index=False)
         print("Too many requests.. :(\n"
               "Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
         exit(0)

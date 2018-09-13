@@ -1,7 +1,7 @@
 import re
 import pandas as pd
 
-from Data.Apartments.Apartments import Apartments
+from Data.Apartments.Apartments import Apartments, DATASETS_PATH
 from Data.ExtractionUtils import geocode, geolocator, TEST_LINES, selectCols, calcDistBetweenCoords
 
 
@@ -14,7 +14,7 @@ class Museums:
     '''
     def loadMuseumsDB(self, radius):
         try:
-            self.data = pd.read_csv("Data/Datasets/museums_db" + str(radius) + ".csv")
+            self.data = pd.read_csv(DATASETS_PATH + "/museums_db" + str(radius) + ".csv")
             self.data = selectCols(self.data, ['ADDRESS', 'museums_in_radius'])
         except FileNotFoundError:
             self.pushMuseumsDB(radius)
@@ -28,7 +28,7 @@ class Museums:
         self.data = Apartments.getInstance().getData()
         self.data = selectCols(self.data, ['ADDRESS', 'LAT', 'LON'])
         self.data['museums_in_radius'] = self.data.apply(self._countMuseumsInRadius, args=(radius,), axis=1)
-        self.data.to_csv(path_or_buf="Data/Datasets/museums_db" + str(radius) + ".csv", index=False)
+        self.data.to_csv(path_or_buf=DATASETS_PATH + "/museums_db" + str(radius) + ".csv", index=False)
 
 
     def _countMuseumsInRadius(self, apartment_location, radius):
