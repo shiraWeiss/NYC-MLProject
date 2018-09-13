@@ -5,6 +5,8 @@ geolocator = Nominatim(user_agent="utils123")
 geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
 from math import sin, cos, sqrt, atan2, radians
 
+DATASETS_PATH = 'Data/Datasets'
+
 all_filters = [  'CRIMES',
                  'HI_ED',
                  'HIGH_SCHOOLS',
