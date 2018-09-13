@@ -63,6 +63,9 @@ class Museums:
         museums.columns = ['LAT', 'LON']
         return museums
 
+    def getData(self):
+        return self.data
+
 
 if __name__ == '__main__':
     a = Museums(5)
