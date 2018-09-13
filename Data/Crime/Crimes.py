@@ -1,6 +1,6 @@
 # use 'pip install uszipcode' to install library
 from uszipcode import ZipcodeSearchEngine as zipcode
-
+from Data.Apartments.Apartments import Apartments
 import pandas as pd
 
 from Data.ExtractionUtils import colToInt, TEST_LINES
@@ -11,12 +11,29 @@ class Crimes:
     Y_COORD = 'Longitude'
 
     def __init__(self):
-        self.data = pd.read_csv("Data/Crime/crimes.csv")
-        # self.data = self.data.head(TEST_LINES)  # todo remove!! short only for testing
-        self.keepOnlyCoordsCols()
-        self.coordsToZipcode()
-        # add the number of crimes column to the zip codes
-        self.data = self.data.groupby(['ZIP CODE']).size().reset_index(name='CRIMES')
+        self.pushCrimesDB()
+        self.loadCrimesDB()
+
+    def pushCrimesDB(self):
+        name = "Data/Crime/crimes_db.csv"
+        try:
+            pd.read_csv(name)
+        except FileNotFoundError:
+            self.data = pd.read_csv("Data/Crime/crimes.csv")
+            # self.data = self.data.head(TEST_LINES)  # todo remove!! short only for testing
+            self.keepOnlyCoordsCols()
+            self.coordsToZipcode()
+            # add the number of crimes column to the zip codes
+            self.data = self.data.groupby(['ZIP CODE']).size().reset_index(name='CRIMES')
+            self.data.to_csv(path_or_buf=name, index=False)
+
+    def loadCrimesDB(self):
+        name = "Data/Crime/crimes_db.csv"
+        try:
+            self.data = pd.read_csv(name)
+        except FileNotFoundError:
+            self.pushCrimesDB()
+
 
     def keepOnlyCoordsCols(self):
         self.data = self.data[[self.X_COORD, self.Y_COORD]]

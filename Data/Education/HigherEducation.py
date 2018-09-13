@@ -1,6 +1,7 @@
 import overpy
 from Data.Apartments.Apartments import *
 import pandas as pd
+from overpy.exception import OverpassGatewayTimeout, OverpassTooManyRequests
 
 NO_RANK = 200
 
@@ -28,6 +29,7 @@ class HigherEducation:
                     "node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=university];" \
                                                                                   ");out;"
         return self.api.query(query_is)
+
 
     '''
     This function searches for a given name in the UNIVERSITY column in the universities rankings
@@ -96,7 +98,7 @@ class HigherEducation:
     '''
     def getBestHiEdAroundAddress(self, address):
         best_rank = NO_RANK
-        all_HiEd = self.allHiEdAroundAddress(address[0])
+        all_HiEd = self.allHiEdAroundAddress(address)
         for inst in all_HiEd.nodes:
             curr_name = str(inst.tags.get("name"))
             # print(curr_name + ", " + getAbbreviation(curr_name) + ", Rank: " + str(self.getRankByNode(inst)))
@@ -120,14 +122,29 @@ class HigherEducation:
     This way, there is no need to run the function more than once for a specific radius.  
     '''
     def pushHiEdDB(self, radius):
+        self.curr_radius = radius
         name = "Data/Education/hied_db" + str(radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
-            addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
-            addresses['HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
-            addresses.to_csv(path_or_buf=name, index=False)
-            self.curr_radius = radius
+            addresses = Apartments.getInstance().getData()[['ADDRESS', 'ROW']]  # .to_frame()
+            addresses['HI_ED'] = None
+            i = 0
+            max_line = 0
+            try:
+                for line in addresses.iterrows():
+                    line_index = line[0]
+                    line_data = line[1]
+                    addresses['HI_ED'][line_index] = self.getBestHiEdAroundAddress(line_data['ADDRESS'])
+                    i += 1
+                    max_line = max(int(line_data['ROW']), max_line)
+                print("Did " + str(i) + "lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
+            except (OverpassGatewayTimeout, OverpassTooManyRequests):
+                print("Too many requests :(\nDid " + str(i) + " lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
 
     '''
     This function loads a csv into the field 'hied_db' in the class.

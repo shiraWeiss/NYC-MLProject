@@ -11,7 +11,7 @@ class ArtGalleries:
     '''
     def loadGalleriesDB(self, radius):
         try:
-            self.data = pd.read_csv("galleries_db" + str(radius) + ".csv")
+            self.data = pd.read_csv("Data/ArtGalleries/galleries_db" + str(radius) + ".csv")
         except FileNotFoundError:
             self.pushGalleriesDB(radius)
 
@@ -20,14 +20,14 @@ class ArtGalleries:
     '''
     def pushGalleriesDB(self, radius):
         self.galleries = self._extractGalleriesData()
-        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv") #   .head(TEST_LINES) # todo use the Apartments instead
+        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv") # .head(TEST_LINES) # todo use the Apartments instead
         self.data['GALLERIES'] = self.data.apply(self._countGalleriesInRadius, args=(radius,), axis=1)
-        self.data.to_csv(path_or_buf="galleries_db" + str(radius) + ".csv", index=False)
+        self.data.to_csv(path_or_buf="Data/ArtGalleries/galleries_db" + str(radius) + ".csv", index=False)
 
 
     def _extractGalleriesData(self):
         galleries = pd.read_csv("Data/ArtGalleries/ART_GALLERY.csv")
-        galleries = galleries   #   .head(TEST_LINES)  # todo remove!! short only for testing
+        galleries = galleries # .head(TEST_LINES)  # todo remove!! short only for testing
         galleries = self._getGalleriesCoords(galleries)
         return galleries
 

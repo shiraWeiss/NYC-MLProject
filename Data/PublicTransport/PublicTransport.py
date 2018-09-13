@@ -1,6 +1,7 @@
 import overpy
 from Data.Apartments.Apartments import *
 from Data.ExtractionUtils import *
+from overpy.exception import OverpassGatewayTimeout, OverpassTooManyRequests
 
 class PublicTransport:
     def __init__(self, radius):
@@ -21,6 +22,8 @@ class PublicTransport:
         result = self.api.query(query_is)
         return len(result.nodes)
 
+
+
     '''
     @return - number of subway stations around the given address, inside the given radius.
     '''
@@ -30,8 +33,11 @@ class PublicTransport:
         if lat == 0 and lon == 0:
             return 0
         query_is = "node(around:" + str(radius) + "," + str(lat) + "," + str(lon) + ")[station = subway];out;"
-        result = self.api.query(query_is)
-        return len(result.nodes)
+        try:
+            result = self.api.query(query_is)
+            return len(result.nodes)
+        except overpy.exception.OverpassTooManyRequests:
+            return self.subwayStopsAroundAddress(address, radius)
 
     '''
     This function takes the addresses from the main table, and runs busStopsAroundAddress
@@ -45,7 +51,7 @@ class PublicTransport:
         try:
             pd.read_csv(name)
         except FileNotFoundError:
-            addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
+            addresses = Apartments.getInstance().getData()['ADDRESS'].to_frame()
             addresses['BUS_STOPS'] = addresses.apply(self.busStopsAroundAddress, args=(radius,), axis=1)
             addresses['SUBWAY_STOPS'] = addresses.apply(self.subwayStopsAroundAddress, args=(radius,), axis=1)
             addresses.to_csv(path_or_buf=name, index=False)

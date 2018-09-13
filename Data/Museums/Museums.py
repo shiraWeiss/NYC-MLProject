@@ -17,7 +17,7 @@ class Museums:
     '''
     def loadMuseumsDB(self, radius):
         try:
-            self.data = pd.read_csv("museums_db" + str(radius) + ".csv")
+            self.data = pd.read_csv("Data/Museums/museums_db" + str(radius) + ".csv")
         except FileNotFoundError:
             self.pushMuseumsDB(radius)
 
@@ -27,9 +27,9 @@ class Museums:
     '''
     def pushMuseumsDB(self, radius):
         self.museums = self._extractMuseumsData()
-        self.data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv") # todo use the Apartments instead
+        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv") # todo use the Apartments instead
         self.data['MUSEUMS'] = self.data.apply(self._countMuseumsInRadius, args=(radius,), axis=1)
-        self.data.to_csv(path_or_buf="museums_db" + str(radius) + ".csv", index=False)
+        self.data.to_csv(path_or_buf="Data/Museums/museums_db" + str(radius) + ".csv", index=False)
 
 
     def _countMuseumsInRadius(self, apartment_location, radius):
@@ -48,8 +48,8 @@ class Museums:
     MUSEUM_COORDS
     '''
     def _extractMuseumsData(self):
-        museums = pd.read_csv("../../museums.csv")
-        # museums = museums.head(TEST_LINES)  # todo remove!! short only for testing
+        museums = pd.read_csv("Data/Museums/museums.csv")
+        museums = museums # .head(TEST_LINES)  # todo remove!! short only for testing
         museums = self._getMuseumsCoords(museums)
         return museums
 

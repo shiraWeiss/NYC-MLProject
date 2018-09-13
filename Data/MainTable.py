@@ -9,11 +9,9 @@ from Data.Health.Health import Health
 from Data.ArtGalleries.ArtGalleries import ArtGalleries
 from Data.Museums.Museums import Museums
 from Data.BuildingAge.BuildingAge import BuildingAge
+import gc
 
 HI_ED_FACTOR = 152
-HIGH_SCHOOLS_FACTOR = 100
-BUS_FACTOR = 100     #  bus & subway factors are *really* subject to change
-SUBWAY_FACTOR = 20  #  bus & subway factors are *really* subject to change
 
 class MainTable:
     def __init__(self):
@@ -22,13 +20,12 @@ class MainTable:
         self.transport      = self._getTransportDB()
         self.hi_ed          = self._getHigherEducationDB()
         self.high_schools   = self._getHighschoolsDB()
-        # self.parks          = self._getParksDB()
         self.noise          = self._getNoiseDB()
         self.health         = self._getHealthDB()
         self.galleries      = self._getGalleriesDB()
         self.museums        = self._getMuseumsDB()
         self.building_age   = self._getAgeDB()
-
+        self.parks          = self._getParksDB()
         self.mergeAllDB()
         self._normalizeFeatures()
         self.main_csv = self.main_db.to_csv(path_or_buf="mainDB.csv", index=False)
@@ -41,7 +38,7 @@ class MainTable:
         self.main_db = self.main_db.merge(self.transport, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.hi_ed, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.high_schools, on='ADDRESS', how='left')
-        # self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left').fillna(value=0)
+        self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left').fillna(value=0)
         self.main_db = self.main_db.merge(self.noise, on='ZIP CODE', how='left').fillna(value=0)
         self.main_db = self.main_db.merge(self.health, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.galleries, on='ADDRESS', how='left')
@@ -54,8 +51,8 @@ class MainTable:
         self.main_db['BUS_STOPS']       = self._normalizeByMaxValue('BUS_STOPS')
         self.main_db['SUBWAY_STOPS']    = self._normalizeByMaxValue('SUBWAY_STOPS')
         self.main_db['CRIMES']          = self._normalizeByMaxValue('CRIMES')
-        # self.main_db['NUM_OF_PARKS']  = self._normalizeByMaxValue('NUM_OF_PARKS')
-        # self.main_db['AREA_OF_PARKS'] = self._normalizeByMaxValue('AREA_OF_PARKS')
+        self.main_db['NUM_OF_PARKS']    = self._normalizeByMaxValue('NUM_OF_PARKS')
+        self.main_db['AREA_OF_PARKS']   = self._normalizeByMaxValue('AREA_OF_PARKS')
         self.main_db['NOISE']           = self._inverseNormalizeByMaxValue('NOISE')
         self.main_db['HEALTH']          = self._inverseNormalizeByMaxValue('HEALTH')
         self.main_db['GALLERIES']       = self._normalizeByMaxValue('GALLERIES')

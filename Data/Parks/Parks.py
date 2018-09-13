@@ -26,7 +26,7 @@ class Parks:
     '''
     def loadParksDB(self, radius, min_area):
         try:
-            self.data = pd.read_csv("../Parks/parks_db" + str(radius) + ".csv")
+            self.data = pd.read_csv("Data/Parks/parks_db" + str(radius) + ".csv")
         except FileNotFoundError:
            self.pushParksDB(radius, min_area)
 
@@ -36,19 +36,18 @@ class Parks:
 
     def pushParksDB(self, radius, min_area):
         self.parks_data = self._extractParksData(min_area)  # parks_data doesn't contain the relation to the apartments
-        self.data = Apartments.getInstance().getAptsData()[['LAT', 'LON']] # data will contain a mapping from each apartment to
+        self.data = Apartments.getInstance().getData()[['LAT', 'LON']] # data will contain a mapping from each apartment to
         parks_and_areas = self.data.apply(self._countAndSumParksInRadius, args=(radius,), axis=1)
         self.data[['NUM_OF_PARKS', 'AREA_OF_PARKS']] = parks_and_areas.apply(pd.Series)
-        self.parks_data.to_csv(path_or_buf="Data/Parks/parks_db" + str(radius) + ".csv", index=False)
-
+        self.data.to_csv(path_or_buf="Data/Parks/parks_db" + str(radius) + ".csv", index=False)
 
     '''
     @return the data with the following fields:
     PARK_NAME, LOCATION, PARK_AREA, where 'LOCATION' is the coordinates of the park
     '''
     def _extractParksData(self, min_area):
-        self.parks_data = pd.read_csv("../Parks/parksProperties.csv")
-        # self.parks_data = self.parks_data.head(TEST_LINES)  # todo remove!! short only for testing
+        self.parks_data = pd.read_csv("Data/Parks/parksProperties.csv")
+        self.parks_data = self.parks_data.head(TEST_LINES)  # todo remove!! short only for testing
         self._keepRelevantParksData()
         self._filterOutParksSmallerThan(min_area)
         return self.parks_data

@@ -11,7 +11,7 @@ class Apartments:
 
     def __init__(self):
         Apartments._instance = self
-        # self._createBaseDB()
+        self._createBaseDB()
         # createApartmentsTableWithCoordinates()
 
     @staticmethod
@@ -20,18 +20,17 @@ class Apartments:
             Apartments()
         return Apartments._instance
 
-
     def getData(self):
-        # return self.data
-        return pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
+        return self.data
+        # return pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
-        # self.data = self.data.head(TEST_LINES)  # todo - remove! short for testing
-        self.data = self.data.iloc[41383:] # todo not sure it's like this
-        self._removeAptsWithMissingData()
-        self._fixAddress()
-        self._normalizeApartsPrice()
+        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
+        self.data = self.data # .head(TEST_LINES)  # todo - remove! short for testing
+        # self.data = self.data.iloc[24395:] # todo not sure it's like this
+        # self._removeAptsWithMissingData()
+        # self._fixAddress()
+        # self._normalizeApartsPrice()
 
     '''
     Remove apartments that doesn't have information about their price or area
@@ -69,7 +68,7 @@ happne, but still.
 :)
 '''
 def fromTableAddressToCoordinates(address):
-    data = pd.read_csv("../Datasets/nyc-rolling-sales-coord.csv")
+    data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
     address_data = data.loc[data['ADDRESS'] == address]
     if not address_data.empty:
         address_data = address_data.iloc[0]

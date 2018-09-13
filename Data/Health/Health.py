@@ -29,7 +29,7 @@ class Health:
         try:
             pd.read_csv(name)
         except FileNotFoundError:
-            addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
+            addresses = Apartments.getInstance().getData()['ADDRESS'].to_frame()
             addresses['HEALTH'] = addresses.apply(self.closestHealthToAddress, axis=1)
             addresses.to_csv(path_or_buf=name, index=False)
 
