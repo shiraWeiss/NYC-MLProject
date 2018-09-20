@@ -47,15 +47,34 @@ class PublicTransport:
     This way, there is no need to run the function more than once for a specific radius.  
     '''
     def pushTransportDB(self, radius):
+        self.curr_radius = radius
         name = "Data/PublicTransport/transport_db" + str(radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
-            addresses = Apartments.getInstance().getData()['ADDRESS'].to_frame()
-            addresses['BUS_STOPS'] = addresses.apply(self.busStopsAroundAddress, args=(radius,), axis=1)
-            addresses['SUBWAY_STOPS'] = addresses.apply(self.subwayStopsAroundAddress, args=(radius,), axis=1)
-            addresses.to_csv(path_or_buf=name, index=False)
-            self.curr_radius = radius
+            addresses = Apartments.getInstance().getData()[['ADDRESS', 'ROW']]  # .to_frame()
+            addresses['BUS_STOPS'] = None
+            addresses['SUBWAY_STOPS'] = None
+            i = 0
+            max_line = 0
+            try:
+                for line in addresses.iterrows():
+                    line_index = line[0]
+                    line_data = line[1]
+                    addresses['BUS_STOPS'][line_index] = self.busStopsAroundAddress(line_data['ADDRESS'], radius)
+                    addresses['SUBWAY_STOPS'][line_index] = self.subwayStopsAroundAddress(line_data['ADDRESS'], radius)
+                    i += 1
+                    max_line = max(int(line_data['ROW']), max_line)
+                print("Did " + str(i) + "lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
+            except (OverpassGatewayTimeout, OverpassTooManyRequests):
+                print("Too many requests :(\nDid " + str(
+                    i) + " lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
+
+
 
     '''
     This function loads a csv into the field 'transport_db' in the class.
