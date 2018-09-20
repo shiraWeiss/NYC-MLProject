@@ -6,13 +6,16 @@ NO_RANK = 200
 
 class HigherEducation:
     def __init__(self, radius):
-        self.api = overpy.Overpass()
-        self.curr_radius = radius
-        self.rankings = pd.read_csv("Data/Education/uni-rank-2.csv")
-        self.rankings['SHORT'] = self.rankings['UNIVERSITY'].apply(getAbbreviation)
-        self.hied_db = pd.DataFrame()
-        self.pushHiEdDB(radius)
-        self.loadHiEdDB()
+        try:
+            self.hied_db = pd.read_csv(DATASETS_PATH + "/hied_db" + str(radius) + ".csv")
+        except FileNotFoundError:
+            self.api = overpy.Overpass()
+            self.curr_radius = radius
+            self.rankings = pd.read_csv("Data/Education/uni-rank-2.csv")
+            self.rankings['SHORT'] = self.rankings['UNIVERSITY'].apply(getAbbreviation)
+            self.hied_db = pd.DataFrame()
+            self.pushHiEdDB(radius)
+            # self.loadHiEdDB()
 
     '''
     Straight forward search in Overpass for all the universities and colleges in the initial radius around the 
@@ -120,27 +123,24 @@ class HigherEducation:
     This way, there is no need to run the function more than once for a specific radius.  
     '''
     def pushHiEdDB(self, radius):
-        name = "Data/Education/hied_db" + str(radius) + ".csv"
-        try:
-            pd.read_csv(name)
-        except FileNotFoundError:
-            addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
-            addresses['HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
-            addresses.to_csv(path_or_buf=name, index=False)
-            self.curr_radius = radius
+        addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
+        addresses['HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
+        addresses.to_csv(path_or_buf=DATASETS_PATH + "/hied_db" + str(self.curr_radius) + ".csv", index=False)
+        self.curr_radius = radius
+        self.hied_db = addresses
 
-    '''
-    This function loads a csv into the field 'hied_db' in the class.
-    The csv that will be loaded is the one with the current radius, so in order to load
-    a specific radius you can change the field "radius" before using this function, and
-    get the relevant csv.
-    '''
-    def loadHiEdDB(self):
-        name = "Data/Education/hied_db" + str(self.curr_radius) + ".csv"
-        try:
-            self.hied_db = pd.read_csv(name)
-        except FileNotFoundError:
-            print("Dor says: No hied_db with that radius in here. Run pushHiEdDB() first.")
+    # '''
+    # This function loads a csv into the field 'hied_db' in the class.
+    # The csv that will be loaded is the one with the current radius, so in order to load
+    # a specific radius you can change the field "radius" before using this function, and
+    # get the relevant csv.
+    # '''
+    # def loadHiEdDB(self):
+    #     name = "Data/Education/hied_db" + str(self.curr_radius) + ".csv"
+    #     try:
+    #         self.hied_db = pd.read_csv(name)
+    #     except FileNotFoundError:
+    #         print("Dor says: No hied_db with that radius in here. Run pushHiEdDB() first.")
 
     def getData(self):
         return self.hied_db

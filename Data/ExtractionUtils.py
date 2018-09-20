@@ -18,7 +18,9 @@ all_filters = [  'CRIMES',
                  'NOISE',
                  'HEALTH',
                  'GALLERIES',
-                 'MUSEUMS' ]
+                 'MUSEUMS',
+                 'BOROUGH',
+                 'BUILDING_AGE' ]
 
 features =    [  'CRIMES',
                  'HI_ED',
@@ -30,7 +32,9 @@ features =    [  'CRIMES',
                  'NOISE',
                  'HEALTH',
                  'GALLERIES',
-                 'MUSEUMS' ]
+                 'MUSEUMS',
+                 'BOROUGH',
+                 'BUILDING_AGE' ]
 
 TEST_LINES = 100
 
