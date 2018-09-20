@@ -4,10 +4,13 @@ from Data.ExtractionUtils import *
 
 class PublicTransport:
     def __init__(self, radius):
-        self.api = overpy.Overpass()
-        self.curr_radius = radius
-        self.pushTransportDB(radius)
-        self.loadTransportDB()
+        try:
+            self.data = pd.read_csv(DATASETS_PATH + "/transport_db" + str(self.curr_radius) + ".csv")
+        except FileNotFoundError:
+            self.api = overpy.Overpass()
+            self.curr_radius = radius
+            self.pushTransportDB(radius)
+            self.loadTransportDB()
 
     '''
     @return - number of bus stations around the given address, inside the given radius.
@@ -58,11 +61,7 @@ class PublicTransport:
     get the relevant csv.
     '''
     def loadTransportDB(self):
-        name = "Data/PublicTransport/transport_db" + str(self.curr_radius) + ".csv"
-        try:
-            self.data = pd.read_csv(name)
-        except FileNotFoundError:
-            print("Dor says: No transport_db with that radius in here. Run pushTransportDB() first.")
+        self.data = pd.read_csv(DATASETS_PATH + "/transport_db" + str(self.curr_radius) + ".csv")
 
     def getData(self):
         return self.data

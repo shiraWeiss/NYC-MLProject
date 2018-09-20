@@ -6,21 +6,24 @@ NO_RANK = -200
 
 class HighSchools:
     def __init__(self, radius):
-        self.api = overpy.Overpass()
-        self.curr_radius = radius
-        self.full_report = pd.read_csv("Data/Education/regents_report.csv")  #  .head(100) # todo - removeeeee
-        self._removeSchoolsWithNoMeanScore()
-        self.merged_report = pd.DataFrame(columns=['School Name', 'Mean Expected Value'])
-        self.generateMergedReport()
-        self.high_schools_db = pd.DataFrame()
-        self.pushHighschoolsDB(radius)
-        self.loadHighschoolsDB()
+        try:
+            self.high_schools_db = pd.read_csv(DATASETS_PATH + "high_schools_db" + str(self.curr_radius) + ".csv")
+        except FileNotFoundError:
+            self.api = overpy.Overpass()
+            self.curr_radius = radius
+            self.full_report = pd.read_csv("Data/Education/regents_report.csv")  #  .head(100) # todo - removeeeee
+            self._removeSchoolsWithNoMeanScore()
+            self.merged_report = pd.DataFrame(columns=['School Name', 'Mean Expected Value'])
+            self.generateMergedReport()
+            self.high_schools_db = pd.DataFrame()
+            self.pushHighschoolsDB(radius)
+            self.loadHighschoolsDB()
 
     def _removeSchoolsWithNoMeanScore(self):
         self.full_report = self.full_report.loc[self.full_report['Mean Score'] != 's']
 
     def generateMergedReport(self):
-        name = "Data/Education/regents_merged" + str(self.curr_radius) +".csv"
+        name = DATASETS_PATH + "/regents_merged" + str(self.curr_radius) +".csv"
         try:
             self.merged_report = pd.read_csv(name)
         except FileNotFoundError:
@@ -107,7 +110,7 @@ class HighSchools:
 
 
     def loadHighschoolsDB(self):
-        name = "Data/Education/high_schools_db" + str(self.curr_radius) + ".csv"
+        name = DATASETS_PATH + "/high_schools_db" + str(self.curr_radius) + ".csv"
         try:
             self.high_schools_db = pd.read_csv(name)
         except FileNotFoundError:

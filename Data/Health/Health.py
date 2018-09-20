@@ -4,11 +4,14 @@ from Data.ExtractionUtils import *
 
 class Health:
     def __init__(self):
-        self.data = pd.read_csv('Data/Health/Health_Facility_General_Information.csv')
-        self.data = removeRowsWithEmptyCol(self.data, 'Facility Latitude')
-        self.data = removeRowsWithEmptyCol(self.data, 'Facility Longitude')
-        self.pushHealthDB()
-        self.loadHealthDB()
+        try:
+            self.data = pd.read_csv(DATASETS_PATH + "/health_db.csv")
+        except FileNotFoundError:
+            self.data = pd.read_csv('Data/Health/Health_Facility_General_Information.csv')
+            self.data = removeRowsWithEmptyCol(self.data, 'Facility Latitude')
+            self.data = removeRowsWithEmptyCol(self.data, 'Facility Longitude')
+            self.pushHealthDB()
+            self.loadHealthDB()
 
     def getData(self):
         return self.data
