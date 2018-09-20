@@ -11,8 +11,11 @@ class Apartments:
 
     def __init__(self):
         Apartments._instance = self
-        self._createBaseDB()
-        # createApartmentsTableWithCoordinates()
+        try:
+            self.data = pd.read_csv(DATASETS_PATH + "/nyc-rolling-sales-coord.csv")
+        except FileNotFoundError:
+            self._createBaseDB()
+            createApartmentsTableWithCoordinates()
 
     @staticmethod
     def getInstance():
@@ -20,17 +23,16 @@ class Apartments:
             Apartments()
         return Apartments._instance
 
+
     def getData(self):
         return self.data
-        # return pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
-        self.data = self.data # .head(TEST_LINES)  # todo - remove! short for testing
-        # self.data = self.data.iloc[24395:] # todo not sure it's like this
-        # self._removeAptsWithMissingData()
-        # self._fixAddress()
-        # self._normalizeApartsPrice()
+        self.data = pd.read_csv("../Datasets/nyc-rolling-sales.csv")
+        # self.data = self.data.iloc[41383:] # todo not sure it's like this
+        self._removeAptsWithMissingData()
+        self._fixAddress()
+        self._normalizeApartsPrice()
 
     '''
     Remove apartments that doesn't have information about their price or area
@@ -68,7 +70,7 @@ happne, but still.
 :)
 '''
 def fromTableAddressToCoordinates(address):
-    data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv")
+    data = pd.read_csv(DATASETS_PATH + "/nyc-rolling-sales-coord.csv")
     address_data = data.loc[data['ADDRESS'] == address]
     if not address_data.empty:
         address_data = address_data.iloc[0]
@@ -107,8 +109,6 @@ def createApartmentsTableWithCoordinates():
     max_line = 0
     try:
         for line in apts.data.iterrows():
-            if i == 1000:
-                break
             line_index = line[0]
             line_data = line[1]
             apts.data['LOCATION'][line_index] = getAddressToCoordinates(line_data['ADDRESS'])
@@ -119,13 +119,13 @@ def createApartmentsTableWithCoordinates():
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
         print("Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
-        apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
+        apts.data.to_csv(path_or_buf=DATASETS_PATH + "/nyc-rolling-sales-coord2.csv", index=False)
 
     except GeocoderQuotaExceeded:
         apts.data = removeRowsWithEmptyCol(apts.data, 'LOCATION')
         apts.data[['LAT', 'LON']] = apts.data['LOCATION'].apply(pd.Series)
         apts.data = removeCols(apts.data, 'LOCATION')
-        apts.data.to_csv(path_or_buf="Data/Datasets/nyc-rolling-sales-coord.csv", index=False)
+        apts.data.to_csv(path_or_buf=DATASETS_PATH + "/nyc-rolling-sales-coord2.csv", index=False)
         print("Too many requests.. :(\n"
               "Did " + str(i) + "lines with geopy. Max line from the original csv is line number " + str(max_line))
         exit(0)

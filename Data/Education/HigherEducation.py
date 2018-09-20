@@ -7,13 +7,16 @@ NO_RANK = 200
 
 class HigherEducation:
     def __init__(self, radius):
-        self.api = overpy.Overpass()
-        self.curr_radius = radius
-        self.rankings = pd.read_csv("Data/Education/uni-rank-2.csv")
-        self.rankings['SHORT'] = self.rankings['UNIVERSITY'].apply(getAbbreviation)
-        self.hied_db = pd.DataFrame()
-        self.pushHiEdDB(radius)
-        self.loadHiEdDB()
+        try:
+            self.hied_db = pd.read_csv(DATASETS_PATH + "/hied_db" + str(radius) + ".csv")
+        except FileNotFoundError:
+            self.api = overpy.Overpass()
+            self.curr_radius = radius
+            self.rankings = pd.read_csv("Data/Education/uni-rank-2.csv")
+            self.rankings['SHORT'] = self.rankings['UNIVERSITY'].apply(getAbbreviation)
+            self.hied_db = pd.DataFrame()
+            self.pushHiEdDB(radius)
+            # self.loadHiEdDB()
 
     '''
     Straight forward search in Overpass for all the universities and colleges in the initial radius around the 
@@ -29,7 +32,6 @@ class HigherEducation:
                     "node(around:" + str(self.curr_radius) + "," + str(lat) + "," + str(lon) + ")[amenity=university];" \
                                                                                   ");out;"
         return self.api.query(query_is)
-
 
     '''
     This function searches for a given name in the UNIVERSITY column in the universities rankings
@@ -98,7 +100,7 @@ class HigherEducation:
     '''
     def getBestHiEdAroundAddress(self, address):
         best_rank = NO_RANK
-        all_HiEd = self.allHiEdAroundAddress(address)
+        all_HiEd = self.allHiEdAroundAddress(address[0])
         for inst in all_HiEd.nodes:
             curr_name = str(inst.tags.get("name"))
             # print(curr_name + ", " + getAbbreviation(curr_name) + ", Rank: " + str(self.getRankByNode(inst)))
@@ -123,7 +125,7 @@ class HigherEducation:
     '''
     def pushHiEdDB(self, radius):
         self.curr_radius = radius
-        name = "Data/Education/hied_db" + str(radius) + ".csv"
+        name = DATASETS_PATH + "/hied_db" + str(self.curr_radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
@@ -141,23 +143,25 @@ class HigherEducation:
                 print("Did " + str(i) + "lines with Overpass. Max line from the original csv is line number " + str(
                     max_line))
                 addresses.to_csv(path_or_buf=name, index=False)
+                self.hied_db = addresses
             except (OverpassGatewayTimeout, OverpassTooManyRequests):
                 print("Too many requests :(\nDid " + str(i) + " lines with Overpass. Max line from the original csv is line number " + str(
                     max_line))
                 addresses.to_csv(path_or_buf=name, index=False)
+                self.hied_db = addresses
 
-    '''
-    This function loads a csv into the field 'hied_db' in the class.
-    The csv that will be loaded is the one with the current radius, so in order to load
-    a specific radius you can change the field "radius" before using this function, and
-    get the relevant csv.
-    '''
-    def loadHiEdDB(self):
-        name = "Data/Education/hied_db" + str(self.curr_radius) + ".csv"
-        try:
-            self.hied_db = pd.read_csv(name)
-        except FileNotFoundError:
-            print("Dor says: No hied_db with that radius in here. Run pushHiEdDB() first.")
+    # '''
+    # This function loads a csv into the field 'hied_db' in the class.
+    # The csv that will be loaded is the one with the current radius, so in order to load
+    # a specific radius you can change the field "radius" before using this function, and
+    # get the relevant csv.
+    # '''
+    # def loadHiEdDB(self):
+    #     name = "Data/Education/hied_db" + str(self.curr_radius) + ".csv"
+    #     try:
+    #         self.hied_db = pd.read_csv(name)
+    #     except FileNotFoundError:
+    #         print("Dor says: No hied_db with that radius in here. Run pushHiEdDB() first.")
 
     def getData(self):
         return self.hied_db
