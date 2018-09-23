@@ -14,6 +14,7 @@ class Noise:
         group_lonlat = group_lonlat.loc[group_lonlat['NOISE'].apply(str) != '1']
         # group by zipcode
         self.data = pd.DataFrame({'NOISE': group_lonlat.groupby(['ZIP CODE']).size()}).reset_index()
+        self.data = self.data.drop_duplicates()
 
     def getData(self):
         return self.data

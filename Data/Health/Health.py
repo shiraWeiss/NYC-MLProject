@@ -5,7 +5,7 @@ from Data.ExtractionUtils import *
 class Health:
     def __init__(self):
         try:
-            self.data = pd.read_csv(DATASETS_PATH + "/health_db.csv")
+            self.data = pd.read_csv(DATASETS_PATH + "/health_db.csv").drop_duplicates(subset='ADDRESS', keep='first')
         except FileNotFoundError:
             self.data = pd.read_csv('Data/Health/Health_Facility_General_Information.csv')
             self.data = removeRowsWithEmptyCol(self.data, 'Facility Latitude')
@@ -39,7 +39,7 @@ class Health:
     def loadHealthDB(self):
         name = "Data/Health/health_db.csv"
         try:
-            self.data = pd.read_csv(name)
+            self.data = pd.read_csv(name).drop_duplicates(subset='ADDRESS', keep='first')
         except FileNotFoundError:
             print("Dor says: No transport_db with that radius in here. Run pushHealthDB() first.")
 

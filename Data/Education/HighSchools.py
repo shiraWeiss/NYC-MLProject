@@ -6,12 +6,14 @@ NO_RANK = -200
 
 class HighSchools:
     def __init__(self, radius):
+        self.curr_radius = radius
         try:
-            self.high_schools_db = pd.read_csv(DATASETS_PATH + "high_schools_db" + str(self.curr_radius) + ".csv")
+            self.high_schools_db = pd.read_csv(DATASETS_PATH + "/high_schools_db" + str(self.curr_radius) + ".csv")
+            self.high_schools_db = removeCols(self.high_schools_db, ['ROW']).drop_duplicates(subset='ADDRESS', keep='first')
         except FileNotFoundError:
             self.api = overpy.Overpass()
             self.curr_radius = radius
-            self.full_report = pd.read_csv("Data/Education/regents_report.csv")  #  .head(100) # todo - removeeeee
+            self.full_report = pd.read_csv("Data/Education/regents_report.csv")
             self._removeSchoolsWithNoMeanScore()
             self.merged_report = pd.DataFrame(columns=['School Name', 'Mean Expected Value'])
             self.generateMergedReport()
@@ -113,6 +115,7 @@ class HighSchools:
         name = DATASETS_PATH + "/high_schools_db" + str(self.curr_radius) + ".csv"
         try:
             self.high_schools_db = pd.read_csv(name)
+            self.high_schools_db = removeCols(self.high_schools_db, ['ROW']).drop_duplicates(subset='ADDRESS', keep='first')
         except FileNotFoundError:
             print("Dor says: No high_schools_db with that radius in here. Run pushHighschoolsDB() first.")
 

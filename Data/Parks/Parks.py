@@ -26,7 +26,7 @@ class Parks:
     def loadParksDB(self, radius, min_area):
         try:
             self.data = pd.read_csv(DATASETS_PATH + "/parks_radius" + str(radius) + "_area" + str(min_area) + ".csv")
-            self.data = selectCols(self.data, ['ADDRESS', 'NUM_OF_PARKS', 'AREA_OF_PARKS'])
+            self.data = selectCols(self.data, ['ADDRESS', 'NUM_OF_PARKS', 'AREA_OF_PARKS']).drop_duplicates(subset='ADDRESS', keep='first')
         except FileNotFoundError:
            self.pushParksDB(radius, min_area)
 

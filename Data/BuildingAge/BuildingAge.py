@@ -12,7 +12,7 @@ class BuildingAge:
     def addAgeToApts(self):
         addresses = self.apts.data[['ADDRESS', 'YEAR BUILT']]
         addresses['BUILDING_AGE'] = addresses.apply(self.calcAgeOfApartment, axis=1)
-        self.data = addresses
+        self.data = addresses.drop_duplicates(subset='ADDRESS', keep='first')
 
     def getData(self):
         return self.data

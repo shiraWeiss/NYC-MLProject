@@ -4,8 +4,9 @@ from Data.ExtractionUtils import *
 
 class PublicTransport:
     def __init__(self, radius):
+        self.curr_radius=radius
         try:
-            self.data = pd.read_csv(DATASETS_PATH + "/transport_db" + str(self.curr_radius) + ".csv")
+            self.loadTransportDB()
         except FileNotFoundError:
             self.api = overpy.Overpass()
             self.curr_radius = radius
@@ -62,6 +63,7 @@ class PublicTransport:
     '''
     def loadTransportDB(self):
         self.data = pd.read_csv(DATASETS_PATH + "/transport_db" + str(self.curr_radius) + ".csv")
+        self.data = self.data[['ADDRESS', 'BUS_STOPS', 'SUBWAY_STOPS']].drop_duplicates(subset='ADDRESS', keep="last")
 
     def getData(self):
         return self.data

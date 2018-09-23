@@ -6,8 +6,10 @@ NO_RANK = 200
 
 class HigherEducation:
     def __init__(self, radius):
+        self.curr_radius=radius
         try:
             self.hied_db = pd.read_csv(DATASETS_PATH + "/hied_db" + str(radius) + ".csv")
+            self.hied_db = removeCols(self.hied_db, ['ROW']).drop_duplicates(subset='ADDRESS', keep='first')
         except FileNotFoundError:
             self.api = overpy.Overpass()
             self.curr_radius = radius
@@ -15,7 +17,6 @@ class HigherEducation:
             self.rankings['SHORT'] = self.rankings['UNIVERSITY'].apply(getAbbreviation)
             self.hied_db = pd.DataFrame()
             self.pushHiEdDB(radius)
-            # self.loadHiEdDB()
 
     '''
     Straight forward search in Overpass for all the universities and colleges in the initial radius around the 
@@ -128,6 +129,7 @@ class HigherEducation:
         addresses.to_csv(path_or_buf=DATASETS_PATH + "/hied_db" + str(self.curr_radius) + ".csv", index=False)
         self.curr_radius = radius
         self.hied_db = addresses
+        self.hied_db = removeCols(self.hied_db, ['ROW']).drop_duplicates(subset='ADDRESS', keep='first')
 
     # '''
     # This function loads a csv into the field 'hied_db' in the class.

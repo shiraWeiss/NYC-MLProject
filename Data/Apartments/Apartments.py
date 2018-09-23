@@ -12,6 +12,7 @@ class Apartments:
         Apartments._instance = self
         try:
             self.data = pd.read_csv(DATASETS_PATH + "/nyc-rolling-sales-coord.csv")
+            self.data = removeCols(self.data, ['ROW']).drop_duplicates()
         except FileNotFoundError:
             self._createBaseDB()
             createApartmentsTableWithCoordinates()
@@ -27,7 +28,7 @@ class Apartments:
         return self.data
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("../Datasets/nyc-rolling-sales.csv")
+        self.data = pd.read_csv(DATASETS_PATH + "/nyc-rolling-sales.csv")
         self._removeAptsWithMissingData()
         self._fixAddress()
         self._normalizeApartsPrice()

@@ -12,13 +12,13 @@ class Crimes:
 
     def __init__(self):
         try:
-            self.data = pd.read_csv(DATASETS_PATH + "/crimes_db.csv")
+            self.data = pd.read_csv(DATASETS_PATH + "/crimes_db.csv").drop_duplicates()
         except FileNotFoundError:
             self.data = pd.read_csv(DATASETS_PATH + "/crimes_db.csv")
             self._keepOnlyCoordsCols()
             self._coordsToZipcode()
             # add the number of crimes column to the zip codes
-            self.data = self.data.groupby(['ZIP CODE']).size().reset_index(name='CRIMES')
+            self.data = self.data.groupby(['ZIP CODE']).size().reset_index(name='CRIMES').drop_duplicates()
             self.data.to_csv(path_or_buf="Data/Datasets/crimes.csv", index=False)
 
     def _keepOnlyCoordsCols(self):
@@ -30,7 +30,6 @@ class Crimes:
     '''
     def _coordsToZipcode(self):
         self.i = 0
-        self.data = self.data.head(100000)
         self.data = self.data.apply(self._getZipcodeFromCoord, axis=1).to_frame()
         self.data.columns = ['ZIP CODE']
         self.data['ZIP CODE'] = colToInt(self.data, 'ZIP CODE')

@@ -16,12 +16,11 @@ class MainTable:
     def __init__(self):
         try:
             self.main_db = pd.read_csv("mainDB.csv")
-            self.main_db = selectCols(self.main_db, [ 'CRIMES', 'BOROUGH', 'NUM_OF_PARKS', 'AREA_OF_PARKS',
-                                                      'SQR_FEET_PRICE', 'MUSEUMS', 'BUILDING_AGE' ])
         except FileNotFoundError:
             self._extractAllDatasets()
             self._mergeAllDB()
             Normalizer(self.main_db).normalizeFeatures()
+            self.main_db = selectCols(self.main_db, all_filters)
             self.main_db = self.main_db.to_csv(path_or_buf="mainDB.csv", index=False)
 
     def _extractAllDatasets(self):
@@ -40,25 +39,28 @@ class MainTable:
 
     def _mergeAllDB(self):
         print("Merging all Datasets...")
-        self.main_db = self.main_db.merge(self.crimes, on='ZIP CODE', how='left').fillna(value=0)
+        self.main_db = self.main_db.merge(self.crimes, on='ZIP CODE', how='left')
         self.main_db = self.main_db.merge(self.transport, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.hi_ed, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.high_schools, on='ADDRESS', how='left')
-        self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left').fillna(value=0)
-        self.main_db = self.main_db.merge(self.noise, on='ZIP CODE', how='left').fillna(value=0)
+        self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left')
+        self.main_db = self.main_db.merge(self.noise, on='ZIP CODE', how='left')
         self.main_db = self.main_db.merge(self.health, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.galleries, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.museums, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.building_age, on='ADDRESS', how='left')
+
+        self.main_db = self.main_db.fillna(value=0)
+        print("Finished merging")
+
 
     # --------------------------------------------------------------------------------- #
     # ------------------------------------ get DBs ------------------------------------ #
     # --------------------------------------------------------------------------------- #
 
     def getDB(self):
-        # return selectCols(self.main_db, all_filters)
-        # todo when all features are ready - return the previews line
-        return self.main_db
+        # return self.main_db
+        return self.main_db[self.main_db['SQR_FEET_PRICE'] >= 50]
 
     def _getApartmentsDB(self):
         print("MainTable: Initializing Apartments...")
@@ -114,3 +116,6 @@ class MainTable:
         print("MainTable: Initializing Buildings Age...")
         extractor = BuildingAge()
         return extractor.getData()
+
+if __name__ == '__main__':
+    main_table = MainTable()
