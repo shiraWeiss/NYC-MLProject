@@ -25,10 +25,10 @@ class Apartments:
 
 
     def getData(self):
-        return self.data
+        return self.data[self.data['BUILDING CLASS CATEGORY'].str.contains("FAMILY")]
 
     def _createBaseDB(self):
-        self.data = pd.read_csv(DATASETS_PATH + "/nyc-rolling-sales.csv")
+        # self.data = pd.read_csv(DATASETS_PATH + "/nyc-rolling-sales.csv")
         self._removeAptsWithMissingData()
         self._fixAddress()
         self._normalizeApartsPrice()

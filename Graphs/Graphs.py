@@ -1,5 +1,3 @@
-import time
-
 import matplotlib.pyplot as plt
 import datetime
 import numpy as np
@@ -64,31 +62,38 @@ Print accuracy for different parameters
 @: param: more_text:
     can add additional text that will be printed on the graph
 '''
-def graph_compareAccuracyOfDifferentParamsValues(x_values, train_scores, test_scores, graph_name, more_text=''):
-    # props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-    # plt.text(0.05, 0.95, more_text, transform=ax.transAxes, fontsize=10,
-    #          verticalalignment='top', bbox=props)
-    # the actual data
+def graph_compareAccuracyOfDifferentParamsValues(x_values, train_scores, test_scores, graph_name, save, more_text=''):
+    train_scores = [ float('%.2f' % num) for num in train_scores]
+    test_scores = [ float('%.2f' % num) for num in test_scores]
+
     ind = np.arange(len(x_values))  # the x locations for the groups
     fig, ax = plt.subplots(figsize=(10,8))
     width = 0.35  # the width of the bars
 
-    train_bars = ax.bar(ind - width / 2, train_scores, width, color='SkyBlue', label='Training Accuracy')
-    test_bars = ax.bar(ind + width / 2, test_scores, width, color='Pink', label='Test Accuracy')
+    train_bars = ax.bar(ind - width / 2, train_scores, width, color='LightGreen', label='Training Accuracy')
+    test_bars = ax.bar(ind + width / 2, test_scores, width, color='Green', label='Test Accuracy')
     # make each X value is showed on the graph
-    ax.set_xticks(ind)
     ax.set_xticklabels(x_values)
+    ax.set_xticks(ind)
+    plt.xlabel(graph_name + ' value')
+    ax.set_ylabel('Accuracy Score')
+
     ax.legend()
-    # add labels
-    plt.xlabel("Parameters Values")
-    plt.ylabel("Accuracy Score")
-    plt.title(graph_name)
-    _addBarValue(train_bars, ax)
-    _addBarValue(test_bars, ax)
-    graph_save(fig, graph_name + "-" + str(datetime.date.fromtimestamp(time.time()).__format__("%d.%m-")))
+    plt.title(graph_name + ' - training scores vs. test scores')
+    _addBarValue(train_bars, train_scores, ax)
+    _addBarValue(test_bars, test_scores, ax)
+    if save == True:
+        graph_save(fig, graph_name)
     plt.show()
 
-def _addBarValue(bars, ax, xpos='center'):
+def graph_save(fig, name):
+    time = datetime.datetime.now()
+    # todo : take note, if in the start of the path for 'name' there is no "Graphs/" - add it.
+    name = name + '-' + str(time.day) + '-' + str(time.month) \
+           + '-' + str(time.year) + '--' + str(time.hour) + str(time.minute) + '.png'
+    fig.savefig(name, dpi=300)
+
+def _addBarValue(bars, scores, ax, xpos='center'):
     """
     Attach a text label above each bar in *bars*, displaying its height.
 
@@ -100,20 +105,7 @@ def _addBarValue(bars, ax, xpos='center'):
     ha = {'center': 'center', 'right': 'left', 'left': 'right'}
     offset = {'center': 0.5, 'right': 0.57, 'left': 0.43}  # x_txt = x + w*off
 
-    for bar in bars:
+    for bar, score in zip(bars, scores):
         height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()*offset[xpos], 1.01*height,
-                '{}'.format(height), ha=ha[xpos], va='bottom')
-
-def graph_save(fig, name):
-    time = datetime.datetime.now()
-    # todo : take note, if in the start of the path for 'name' there is no "Graphs/" - add it.
-    name = name + '-' + str(time.day) + '-' + str(time.month) \
-           + '-' + str(time.year) + '--' + str(time.hour) + str(time.minute) + '.png'
-    fig.savefig(name, dpi=300)
-
-
-if __name__ == '__main__':
-    # graph_PredictionVsActual(range(1,50), range(1,50), 'x', 'y', 'trial graph', 0.5, 0.7, 'More Details mannnn')
-    graph_compareAccuracyOfDifferentParamsValues([1, 2, 3, 4, 5, 6, 7, 8], [0.1, 0.2, 0.25, 0.3, 0.4, 0.1, 0.05, 2], [0.1, 0.2, 0.25, 0.3, 0.4, 0.1, 0.05, 2],
-                                                 "compare params")
+        ax.text(bar.get_x() + bar.get_width() * offset[xpos], 1.01 * height,
+                '{}'.format(score), ha=ha[xpos], va='bottom')

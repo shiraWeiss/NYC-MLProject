@@ -26,6 +26,7 @@ class MainTable:
     def _extractAllDatasets(self):
         print("Extractnig all Datasets...")
         self.main_db = self._getApartmentsDB()
+
         self.crimes = self._getCrimesDB()
         self.transport      = self._getTransportDB()
         self.hi_ed          = self._getHigherEducationDB()
@@ -59,8 +60,7 @@ class MainTable:
     # --------------------------------------------------------------------------------- #
 
     def getDB(self):
-        # return self.main_db
-        return self.main_db[self.main_db['SQR_FEET_PRICE'] >= 50]
+        return self.main_db[self.main_db['SQR_FEET_PRICE'] >= 150]
 
     def _getApartmentsDB(self):
         print("MainTable: Initializing Apartments...")

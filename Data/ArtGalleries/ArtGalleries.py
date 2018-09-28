@@ -20,7 +20,7 @@ class ArtGalleries:
     '''
     def pushGalleriesDB(self, radius):
         self.galleries = self._extractGalleriesData()
-        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv") #   .head(TEST_LINES) # todo use the Apartments instead
+        self.data = Apartments.getInstance().getData()
         self.data['GALLERIES'] = self.data.apply(self._countGalleriesInRadius, args=(radius,), axis=1)
         self.data = selectCols(self.data, ['ADDRESS', 'GALLERIES']).drop_duplicates(subset='ADDRESS', keep='first')
         self.data.to_csv(path_or_buf="galleries_db" + str(radius) + ".csv", index=False)
