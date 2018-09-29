@@ -1,5 +1,5 @@
 import time
-
+from matplotlib.pyplot import figure
 import matplotlib.pyplot as plt
 import datetime
 import numpy as np
@@ -23,7 +23,7 @@ The closer your points are to the line y=x, the better.
 
 
 def graph_PredictionVsActual(y_prediction, y_actual, x_label, y_label, graph_name, train_score=None, test_score=None,
-                             more_text=None):
+                             more_text=None, color = None):
     print("Graph: Plotting...")
     # text boxes
     fig, ax = plt.subplots()
@@ -36,7 +36,9 @@ def graph_PredictionVsActual(y_prediction, y_actual, x_label, y_label, graph_nam
                  verticalalignment='top', bbox=props)
 
     # the actual data
-    plt.scatter(y_actual, y_prediction, s=20, edgecolor="black", c="darkorange", label="data")
+    if color is None:
+        color = "darkorange"
+    plt.scatter(y_actual, y_prediction, s=20, edgecolor="black", c=color, label="data")
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(graph_name)
@@ -109,11 +111,47 @@ def graph_save(fig, name):
     time = datetime.datetime.now()
     # todo : take note, if in the start of the path for 'name' there is no "Graphs/" - add it.
     name = name + '-' + str(time.day) + '-' + str(time.month) \
-           + '-' + str(time.year) + '--' + str(time.hour) + str(time.minute) + '.png'
+           + '-' + str(time.year) + '--' + str(time.hour) + str(time.minute) + str(time.second)+ '.png'
     fig.savefig(name, dpi=300)
 
+def graph_coorelation(x, y, x_label, y_label):
+    name = 'Relationship between ' + x_label + ' and ' + y_label
+    fig = figure(num=None, figsize=(8, 6), dpi=180, facecolor='w', edgecolor='k')
+    plt.scatter(x, y)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title(name)
+    name = 'LinearRegression/coorelation_graph_' + x_label + '_-_' + y_label
+    graph_save(fig, name)
 
-if __name__ == '__main__':
-    # graph_PredictionVsActual(range(1,50), range(1,50), 'x', 'y', 'trial graph', 0.5, 0.7, 'More Details mannnn')
-    graph_compareAccuracyOfDifferentParamsValues([1, 2, 3, 4, 5, 6, 7, 8], [0.1, 0.2, 0.25, 0.3, 0.4, 0.1, 0.05, 2], [0.1, 0.2, 0.25, 0.3, 0.4, 0.1, 0.05, 2],
-                                                 "compare params")
+def graph_multipleExperiments_compareParameterEffect(train_scores_dict, test_scores_dict, algorithm_name, param_name):
+    train_values    = list(train_scores_dict.values())
+    train_keys      = list(train_scores_dict.keys())
+    fig, ax = plt.subplots()
+    plt.plot(train_keys, train_values, label='Training Accuracy', marker='o', color='peachpuff')
+
+    test_values     = list(test_scores_dict.values())
+    test_keys       = list(test_scores_dict.keys())
+    plt.plot(test_keys, test_values, label='Test Accuracy', marker='o', color='greenyellow')
+
+    plt.xlabel(param_name)
+    plt.ylabel('Accuracy')
+    plt.title(algorithm_name)
+    plt.legend(loc='upper left')
+    plt.show()
+    name = algorithm_name + '_checking_param_' + param_name
+    graph_save(fig, name)
+
+def graph_multipleExperiments_compareParameterEffect_meanScores(mean_scores_dict, algorithm_name, param_name):
+    train_values    = list(mean_scores_dict.values())
+    train_keys      = list(mean_scores_dict.keys())
+    fig, ax = plt.subplots()
+    plt.plot(train_keys, train_values, label='Average Accuracy', marker='o', color='lime')
+
+    plt.xlabel(param_name)
+    plt.ylabel('Accuracy')
+    plt.title(algorithm_name)
+    plt.legend(loc='upper left')
+    plt.show()
+    name = algorithm_name + '_checking_param_' + param_name
+    graph_save(fig, name)

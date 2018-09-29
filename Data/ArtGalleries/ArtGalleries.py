@@ -3,15 +3,16 @@ from geopy.distance import geodesic
 from Data.ExtractionUtils import *
 
 class ArtGalleries:
-    def __init__(self):
-        self.loadGalleriesDB(1)
+    def __init__(self, radius):
+        print("init Galleries with radius" + str(radius))
+        self.loadGalleriesDB(radius)
 
     '''
     Load the galleries DB from csv, or create it if necessary
     '''
     def loadGalleriesDB(self, radius):
         try:
-            self.data = pd.read_csv("Data/ArtGalleries/galleries_db" + str(radius) + ".csv")
+            self.data = pd.read_csv(DATASETS_PATH + "/galleries_db" + str(radius) + ".csv")
         except FileNotFoundError:
             self.pushGalleriesDB(radius)
 
@@ -22,7 +23,7 @@ class ArtGalleries:
         self.galleries = self._extractGalleriesData()
         self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales-coord.csv") # .head(TEST_LINES) # todo use the Apartments instead
         self.data['GALLERIES'] = self.data.apply(self._countGalleriesInRadius, args=(radius,), axis=1)
-        self.data.to_csv(path_or_buf="Data/ArtGalleries/galleries_db" + str(radius) + ".csv", index=False)
+        self.data.to_csv(path_or_buf= DATASETS_PATH + "/galleries_db" + str(radius) + ".csv", index=False)
 
 
     def _extractGalleriesData(self):

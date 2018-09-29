@@ -7,6 +7,7 @@ NO_RANK = -200
 
 class HighSchools:
     def __init__(self, radius):
+        self.curr_radius = radius
         try:
             self.high_schools_db = pd.read_csv(DATASETS_PATH + "high_schools_db" + str(self.curr_radius) + ".csv")
         except FileNotFoundError:

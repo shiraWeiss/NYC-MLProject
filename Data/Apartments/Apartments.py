@@ -28,15 +28,15 @@ class Apartments:
         return self.data
 
     def _createBaseDB(self):
-        self.data = pd.read_csv("../Datasets/nyc-rolling-sales.csv")
-        # self.data = self.data.iloc[41383:] # todo not sure it's like this
+        self.data = pd.read_csv("Data/Datasets/nyc-rolling-sales.csv")
+        # self.data = self.data.iloc[38360:] # for iterations of accumulating data
         self._removeAptsWithMissingData()
         self._fixAddress()
         self._normalizeApartsPrice()
 
     '''
     Remove apartments that doesn't have information about their price or area
-    @Return updated data frame
+    @return updated data frame
     '''
     def _removeAptsWithMissingData(self):
         self.data = removeRowsWithEmptyCol(self.data, 'LAND SQUARE FEET')

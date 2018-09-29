@@ -14,18 +14,18 @@ from Data.BuildingAge.BuildingAge import BuildingAge
 
 class MainTable:
     def __init__(self):
+        main_db_path = DATASETS_PATH + "/mainDB.csv"
         try:
-            self.main_db = pd.read_csv("mainDB.csv")
-            self.main_db = selectCols(self.main_db, [ 'CRIMES', 'BOROUGH', 'NUM_OF_PARKS', 'AREA_OF_PARKS',
-                                                      'SQR_FEET_PRICE', 'MUSEUMS', 'BUILDING_AGE' ])
+            self.main_db = pd.read_csv(main_db_path)
+            self.main_db = selectCols(self.main_db, all_filters)
         except FileNotFoundError:
             self._extractAllDatasets()
             self._mergeAllDB()
             Normalizer(self.main_db).normalizeFeatures()
-            self.main_db = self.main_db.to_csv(path_or_buf="mainDB.csv", index=False)
+            self.main_db = self.main_db.to_csv(path_or_buf= main_db_path, index=False)
 
     def _extractAllDatasets(self):
-        print("Extractnig all Datasets...")
+        print("Extracting all Datasets...")
         self.main_db        = self._getApartmentsDB()
         self.crimes         = self._getCrimesDB()
         self.transport      = self._getTransportDB()
@@ -35,8 +35,8 @@ class MainTable:
         self.noise          = self._getNoiseDB()
         self.health         = self._getHealthDB()
         self.galleries      = self._getGalleriesDB()
-        self.museums = self._getMuseumsDB()
-        self.building_age = self._getAgeDB()
+        self.museums        = self._getMuseumsDB()
+        self.building_age   = self._getAgeDB()
 
     def _mergeAllDB(self):
         print("Merging all Datasets...")
@@ -56,9 +56,8 @@ class MainTable:
     # --------------------------------------------------------------------------------- #
 
     def getDB(self):
-        # return selectCols(self.main_db, all_filters)
-        # todo when all features are ready - return the previews line
-        return self.main_db
+        # return self.main_db
+        return self.main_db[self.main_db['SQR_FEET_PRICE'] >= 50]
 
     def _getApartmentsDB(self):
         print("MainTable: Initializing Apartments...")
