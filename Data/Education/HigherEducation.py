@@ -1,6 +1,7 @@
 import overpy
 from Data.Apartments.Apartments import *
 import pandas as pd
+from overpy.exception import OverpassGatewayTimeout, OverpassTooManyRequests
 
 NO_RANK = 200
 
@@ -124,10 +125,31 @@ class HigherEducation:
     This way, there is no need to run the function more than once for a specific radius.  
     '''
     def pushHiEdDB(self, radius):
-        addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
-        addresses['HI_ED'] = addresses.apply(self.getBestHiEdAroundAddress, axis=1)
-        addresses.to_csv(path_or_buf=DATASETS_PATH + "/hied_db" + str(self.curr_radius) + ".csv", index=False)
         self.curr_radius = radius
+        name = DATASETS_PATH + "/hied_db" + str(self.curr_radius) + ".csv"
+        try:
+            pd.read_csv(name)
+        except FileNotFoundError:
+            addresses = Apartments.getInstance().getData()[['ADDRESS', 'ROW']]  # .to_frame()
+            addresses['HI_ED'] = None
+            i = 0
+            max_line = 0
+            try:
+                for line in addresses.iterrows():
+                    line_index = line[0]
+                    line_data = line[1]
+                    addresses['HI_ED'][line_index] = self.getBestHiEdAroundAddress(line_data['ADDRESS'])
+                    i += 1
+                    max_line = max(int(line_data['ROW']), max_line)
+                print("Did " + str(i) + "lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
+                self.hied_db = addresses
+            except (OverpassGatewayTimeout, OverpassTooManyRequests):
+                print("Too many requests :(\nDid " + str(i) + " lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
+                self.hied_db = addresses
         self.hied_db = addresses
         self.hied_db = removeCols(self.hied_db, ['ROW']).drop_duplicates(subset='ADDRESS', keep='first')
 

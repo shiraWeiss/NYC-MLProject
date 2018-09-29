@@ -1,6 +1,7 @@
 import overpy
 from Data.Apartments.Apartments import *
 import pandas as pd
+from overpy.exception import OverpassGatewayTimeout, OverpassTooManyRequests
 
 NO_RANK = -200
 
@@ -25,7 +26,7 @@ class HighSchools:
         self.full_report = self.full_report.loc[self.full_report['Mean Score'] != 's']
 
     def generateMergedReport(self):
-        name = DATASETS_PATH + "/regents_merged" + str(self.curr_radius) +".csv"
+        name = "Data/Education/regents_report.csv"
         try:
             self.merged_report = pd.read_csv(name)
         except FileNotFoundError:
@@ -95,20 +96,35 @@ class HighSchools:
 
     def getBestHighschoolsAroundAddress(self, address):
         best_rank = NO_RANK
-        all = self.allSchoolsAroundAddress(address[0])
+        all = self.allSchoolsAroundAddress(address)
         for inst in all.nodes:
             best_rank = max(self.getMeanByNode(inst), best_rank)
         return best_rank
 
     def pushHighschoolsDB(self, radius):
-        name = "Data/Education/high_schools_db" + str(radius) + ".csv"
+        self.curr_radius = radius
+        name = DATASETS_PATH + "/high_schools_db" + str(self.curr_radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
-            addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
-            addresses['HIGH_SCHOOLS'] = addresses.apply(self.getBestHighschoolsAroundAddress, axis=1)
-            addresses.to_csv(path_or_buf=name, index=False)
-            self.curr_radius = radius
+            addresses = Apartments.getInstance().getData()[['ADDRESS', 'ROW']] # .to_frame()
+            addresses['HIGH_SCHOOLS'] = None
+            i = 0
+            max_line = 0
+            try:
+                for line in addresses.iterrows():
+                    line_index = line[0]
+                    line_data = line[1]
+                    addresses['HIGH_SCHOOLS'][line_index] = self.getBestHighschoolsAroundAddress(line_data['ADDRESS'])
+                    i += 1
+                    max_line = max(int(line_data['ROW']), max_line)
+                print("Did " + str(i) + "lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
+            except (OverpassGatewayTimeout, OverpassTooManyRequests):
+                print("Too many requests :(\nDid " + str(i) + " lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
 
 
     def loadHighschoolsDB(self):

@@ -3,8 +3,9 @@ from geopy.distance import geodesic
 from Data.ExtractionUtils import *
 
 class ArtGalleries:
-    def __init__(self):
-        self.loadGalleriesDB(1)
+    def __init__(self, radius):
+        print("init Galleries with radius" + str(radius))
+        self.loadGalleriesDB(radius)
 
     '''
     Load the galleries DB from csv, or create it if necessary

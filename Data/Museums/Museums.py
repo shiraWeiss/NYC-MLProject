@@ -7,6 +7,7 @@ from Data.ExtractionUtils import geocode, geolocator, TEST_LINES, selectCols, ca
 
 class Museums:
     def __init__(self, radius):
+        print("init Museums with radius" + str(radius))
         self.loadMuseumsDB(radius)
 
     '''
@@ -47,7 +48,7 @@ class Museums:
     MUSEUM_COORDS
     '''
     def _extractMuseumsData(self):
-        museums = pd.read_csv("museums.csv")
+        museums = pd.read_csv("Data/Museums/museums.csv")
         museums = self._getMuseumsCoords(museums)
 
         return museums

@@ -26,17 +26,16 @@ class MainTable:
     def _extractAllDatasets(self):
         print("Extractnig all Datasets...")
         self.main_db = self._getApartmentsDB()
-
         self.crimes = self._getCrimesDB()
         self.transport      = self._getTransportDB()
         self.hi_ed          = self._getHigherEducationDB()
         self.high_schools   = self._getHighschoolsDB()
-        self.parks = self._getParksDB()
+        self.parks          = self._getParksDB()
         self.noise          = self._getNoiseDB()
         self.health         = self._getHealthDB()
         self.galleries      = self._getGalleriesDB()
-        self.museums = self._getMuseumsDB()
-        self.building_age = self._getAgeDB()
+        self.museums        = self._getMuseumsDB()
+        self.building_age   = self._getAgeDB()
 
     def _mergeAllDB(self):
         print("Merging all Datasets...")
@@ -104,7 +103,7 @@ class MainTable:
 
     def _getGalleriesDB(self):
         print("MainTable: Initializing Galleries...")
-        extractor = ArtGalleries()
+        extractor = ArtGalleries(0.2)
         return extractor.getData()
 
     def _getMuseumsDB(self):

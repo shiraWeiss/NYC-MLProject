@@ -1,15 +1,16 @@
 import overpy
 from Data.Apartments.Apartments import *
 from Data.ExtractionUtils import *
+from overpy.exception import OverpassGatewayTimeout, OverpassTooManyRequests
+import sys
 
 class PublicTransport:
     def __init__(self, radius):
-        self.curr_radius=radius
+        self.curr_radius = radius
         try:
-            self.loadTransportDB()
+            self.data = pd.read_csv(DATASETS_PATH + "/transport_db" + str(self.curr_radius) + ".csv")
         except FileNotFoundError:
             self.api = overpy.Overpass()
-            self.curr_radius = radius
             self.pushTransportDB(radius)
             self.loadTransportDB()
 
@@ -18,24 +19,29 @@ class PublicTransport:
     '''
     def busStopsAroundAddress(self, address, radius):
         self.curr_radius = radius
-        lat, lon = fromTableAddressToCoordinates(address[0])
+        lat, lon = fromTableAddressToCoordinates(address)
         if lat == 0 and lon == 0:
             return 0
         query_is = "node(around:" + str(radius) + "," + str(lat) + "," + str(lon) + ")[highway=bus_stop];out;"
         result = self.api.query(query_is)
         return len(result.nodes)
 
+
+
     '''
     @return - number of subway stations around the given address, inside the given radius.
     '''
     def subwayStopsAroundAddress(self, address, radius):
         self.curr_radius = radius
-        lat, lon = fromTableAddressToCoordinates(address[0])
+        lat, lon = fromTableAddressToCoordinates(address)
         if lat == 0 and lon == 0:
             return 0
         query_is = "node(around:" + str(radius) + "," + str(lat) + "," + str(lon) + ")[station = subway];out;"
-        result = self.api.query(query_is)
-        return len(result.nodes)
+        try:
+            result = self.api.query(query_is)
+            return len(result.nodes)
+        except overpy.exception.OverpassTooManyRequests:
+            return self.subwayStopsAroundAddress(address, radius)
 
     '''
     This function takes the addresses from the main table, and runs busStopsAroundAddress
@@ -45,15 +51,40 @@ class PublicTransport:
     This way, there is no need to run the function more than once for a specific radius.  
     '''
     def pushTransportDB(self, radius):
-        name = "Data/PublicTransport/transport_db" + str(radius) + ".csv"
+        self.curr_radius = radius
+        name = DATASETS_PATH + "/transport_db" + str(radius) + ".csv"
         try:
             pd.read_csv(name)
         except FileNotFoundError:
-            addresses = Apartments.getInstance().data['ADDRESS'].to_frame()
-            addresses['BUS_STOPS'] = addresses.apply(self.busStopsAroundAddress, args=(radius,), axis=1)
-            addresses['SUBWAY_STOPS'] = addresses.apply(self.subwayStopsAroundAddress, args=(radius,), axis=1)
-            addresses.to_csv(path_or_buf=name, index=False)
-            self.curr_radius = radius
+            addresses = Apartments.getInstance().getData()[['ADDRESS', 'ROW']]  # .to_frame()
+            addresses['BUS_STOPS'] = None
+            addresses['SUBWAY_STOPS'] = None
+            i = 0
+            max_line = 0
+            try:
+                for line in addresses.iterrows():
+                    print(str(i) + '... ')
+                    line_index = line[0]
+                    line_data = line[1]
+                    addresses['BUS_STOPS'][line_index] = self.busStopsAroundAddress(line_data['ADDRESS'], radius)
+                    addresses['SUBWAY_STOPS'][line_index] = self.subwayStopsAroundAddress(line_data['ADDRESS'], radius)
+                    i += 1
+                    max_line = max(int(line_data['ROW']), max_line)
+                print("Did " + str(i) + "lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
+            except (OverpassGatewayTimeout, OverpassTooManyRequests):
+                print("Too many requests :(\nDid " + str(
+                    i) + " lines with Overpass. Max line from the original csv is line number " + str(
+                    max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
+            except:
+                print("Unexpected error: ", sys.exc_info()[0])
+                print("Did " + str(i) + " lines with Overpass. "
+                    "Max line from the original csv is line number " + str(max_line))
+                addresses.to_csv(path_or_buf=name, index=False)
+
+
 
     '''
     This function loads a csv into the field 'transport_db' in the class.
@@ -67,3 +98,8 @@ class PublicTransport:
 
     def getData(self):
         return self.data
+
+
+if __name__ == '__main__':
+    transport = PublicTransport(1000)
+    print('done. you should have a normal trnasport_db now. or at least a normal part of it.')
