@@ -13,20 +13,23 @@ from Data.BuildingAge.BuildingAge import BuildingAge
 
 
 class MainTable:
-    def __init__(self):
+    def __init__(self, extra=None):
         try:
-            self.main_db = pd.read_csv("mainDB.csv")
+            if extra is not None:
+                self.main_db = pd.read_csv("Data/Datasets/mainDB" + str(extra) + ".csv")
+            else:
+                self.main_db = pd.read_csv("Data/Datasets/mainDB.csv")
         except FileNotFoundError:
             self._extractAllDatasets()
             self._mergeAllDB()
             Normalizer(self.main_db).normalizeFeatures()
-            self.main_db = selectCols(self.main_db, all_filters)
-            self.main_db = self.main_db.to_csv(path_or_buf="mainDB.csv", index=False)
+            # self.main_db = selectCols(self.main_db, all_filters)
+            self.main_db = self.main_db.to_csv(path_or_buf="Data/Datasets/mainDB.csv", index=False)
 
     def _extractAllDatasets(self):
         print("Extractnig all Datasets...")
-        self.main_db = self._getApartmentsDB()
-        self.crimes = self._getCrimesDB()
+        self.main_db        = self._getApartmentsDB()
+        self.crimes         = self._getCrimesDB()
         self.transport      = self._getTransportDB()
         self.hi_ed          = self._getHigherEducationDB()
         self.high_schools   = self._getHighschoolsDB()
@@ -103,12 +106,12 @@ class MainTable:
 
     def _getGalleriesDB(self):
         print("MainTable: Initializing Galleries...")
-        extractor = ArtGalleries(0.2)
+        extractor = ArtGalleries(5)
         return extractor.getData()
 
     def _getMuseumsDB(self):
         print("MainTable: Initializing Museums...")
-        extractor = Museums(1)
+        extractor = Museums(3)
         return extractor.getData()
 
     def _getAgeDB(self):

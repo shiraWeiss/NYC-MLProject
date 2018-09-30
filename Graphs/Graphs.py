@@ -155,3 +155,21 @@ def graph_multipleExperiments_compareParameterEffect_meanScores(mean_scores_dict
     plt.show()
     name = algorithm_name + '_checking_param_' + param_name
     graph_save(fig, name)
+
+def graph_paramTuning(train_scores_dict, test_scores_dict, algorithm_name, param_name):
+    train_values    = list(train_scores_dict.values())
+    train_keys      = list(train_scores_dict.keys())
+    fig, ax = plt.subplots()
+    plt.plot(train_keys, train_values, label='Training Accuracy', marker='o', color='peachpuff')
+
+    test_values     = list(test_scores_dict.values())
+    test_keys       = list(test_scores_dict.keys())
+    plt.plot(test_keys, test_values, label='Test Accuracy', marker='o', color='greenyellow')
+
+    plt.xlabel(param_name)
+    plt.ylabel('Accuracy')
+    plt.title(algorithm_name)
+    plt.legend(loc='upper left')
+    plt.show()
+    name = algorithm_name + '_tuning_param_' + param_name
+    graph_save(fig, name)

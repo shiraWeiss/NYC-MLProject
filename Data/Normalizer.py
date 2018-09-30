@@ -19,7 +19,7 @@ class Normalizer:
         self.main_db['GALLERIES']       = self._normalizeByMaxValue('GALLERIES')
         self.main_db['MUSEUMS']         = self._normalizeByMaxValue('MUSEUMS')
         self.main_db['BUILDING_AGE']    = self._inverseNormalizeByMaxValue('BUILDING_AGE')
-        self.main_db['BOROUGH'] = self._inverseNormalizeByMaxValue('BOROUGH')
+        self.main_db['BOROUGH']         = self._inverseNormalizeByMaxValue('BOROUGH')
 
         self.main_db.fillna(0, inplace=True)
 

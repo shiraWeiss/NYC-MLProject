@@ -67,22 +67,45 @@ def findingBestN_crossValidation(X, y, X_train, X_test, y_test, knn_regressor, i
         mean_score_dict[n] = crossValidateWithValidationGroup(X, y, X_train, X_test, y_test, knn_regressor, n)
     graph_multipleExperiments_compareParameterEffect_meanScores(mean_score_dict, 'KNN', 'n = number of splits')
 
+def paramTuning(file_name, param_values_list, param_name):
+    train_scores_dict = {}
+    test_scores_dict = {}
+    for p in param_values_list:
+        # Get the base table
+        all_data = MainTable(extra = file_name + str(p))
+        df = all_data.getDB()
+
+        # Split to Data and Actual results
+        X = selectCols(df, features)
+        y = df['SQR_FEET_PRICE']
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+        regressor = neighbors.KNeighborsRegressor(n_neighbors=16)
+        regressor.fit(X_train, y_train)
+
+        train_score = regressor.score(X_train, y_train)
+        test_score = regressor.score(X_test, y_test)
+
+        train_scores_dict[p] = train_score
+        test_scores_dict[p] = test_score
+    graph_paramTuning(train_scores_dict, test_scores_dict, 'KNN', param_name)
 
 if __name__ == '__main__':
-    # Get the base table
-    all_data = MainTable()
-    df = all_data.getDB()
-    # df = df[all_filters]
+    # # Get the base table
+    # all_data = MainTable()
+    # df = all_data.getDB()
+    #
+    # # Split to Data and Actual results
+    # X = selectCols(df, features)
+    # y = df['SQR_FEET_PRICE']
 
-    # Split to Data and Actual results
-    X = selectCols(df, features)
-    y = df['SQR_FEET_PRICE']
-
+    paramTuning('_galleries_db', [0.2, 0.5, 1, 2, 3, 4, 5], 'Galleries radius (km)')
+    # paramTuning('_museums_db', [0.2, 0.5, 1, 2, 3], 'Museums radius (km)')
     # y_pred, test_score, train_score = predictionAndScore(X, y, 16)
 
     # Cross validation
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
-    knn_regressor = neighbors.KNeighborsRegressor(n_neighbors=16)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+    # knn_regressor = neighbors.KNeighborsRegressor(n_neighbors=16)
     # cv_results = cross_validate(knn_regressor, X_train, y_train, cv=3, return_train_score=True)
 
-    findingBestN_crossValidation(X, y, X_train, X_test, y_test, knn_regressor, 2, 40)
+    # findingBestN_crossValidation(X, y, X_train, X_test, y_test, knn_regressor, 2, 40)

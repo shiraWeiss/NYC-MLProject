@@ -46,16 +46,16 @@ def coorelationExperiments(X, y, df, regressor):
 if __name__ == '__main__':
     # Get the base table
     all_data = MainTable()
-    # df = all_data.getDB()
+    df = all_data.getDB()
 
     # Split to Data and Actual results
-    # X = selectCols(df, features)
-    # y = df['SQR_FEET_PRICE']
+    X = selectCols(df, features)
+    y = df['SQR_FEET_PRICE']
 
     # it's better if this piece of code happens only once because it takes a long time to fit
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 42)
-    # regressor = LinearRegression()
-    # regressor.fit(X_train, y_train)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 42)
+    regressor = LinearRegression()
+    regressor.fit(X_train, y_train)
 
     # coorelationExperiments(X, y, df, regressor)
     # predictionAndScore_andDisplay(regressor, X_train, X_test, y_train, y_test)
