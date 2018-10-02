@@ -2,7 +2,7 @@ from Data.Apartments.Apartments import *
 
 class Noise:
     def __init__(self):
-        self.data = pd.read_csv("Data/Noise/party_in_nyc.csv")
+        self.data = pd.read_csv(DATASETS_PATH + "/party_in_nyc.csv")
         self.data = self.data.loc[self.data['ZIP CODE'].apply(str) != '83.0']  #  removing weird zipcode error
         self.groupReoccuringComplaints()
 

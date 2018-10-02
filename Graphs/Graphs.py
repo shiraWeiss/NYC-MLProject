@@ -172,4 +172,4 @@ def graph_paramTuning(train_scores_dict, test_scores_dict, algorithm_name, param
     plt.legend(loc='upper left')
     plt.show()
     name = algorithm_name + '_tuning_param_' + param_name
-    graph_save(fig, name)
+    # graph_save(fig, name) #todo not save for submission

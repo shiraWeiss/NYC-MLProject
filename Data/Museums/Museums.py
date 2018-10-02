@@ -2,7 +2,7 @@ import re
 import pandas as pd
 
 from Data.Apartments.Apartments import Apartments, DATASETS_PATH
-from Data.ExtractionUtils import geocode, geolocator, TEST_LINES, selectCols, calcDistBetweenCoords
+from Data.ExtractionUtils import selectCols, calcDistBetweenCoords
 
 
 class Museums:

@@ -46,7 +46,7 @@ class MainTable:
         self.main_db = self.main_db.merge(self.transport, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.hi_ed, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.high_schools, on='ADDRESS', how='left')
-        self.main_db = self.main_db.merge(self.parks, on='ADDRESS', how='left')
+        self.main_db = self.main_db.merge(self.parks, on=['LAT', 'LON'], how='left')
         self.main_db = self.main_db.merge(self.noise, on='ZIP CODE', how='left')
         self.main_db = self.main_db.merge(self.health, on='ADDRESS', how='left')
         self.main_db = self.main_db.merge(self.galleries, on='ADDRESS', how='left')
@@ -81,7 +81,7 @@ class MainTable:
 
     def _getParksDB(self):
         print("MainTable: Initializing Parks...")
-        extractor = Parks(radius=1, min_area=100)
+        extractor = Parks(radius=1, min_area=200)
         return extractor.getData()
 
     def _getHigherEducationDB(self):

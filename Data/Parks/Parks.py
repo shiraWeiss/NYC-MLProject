@@ -26,7 +26,7 @@ class Parks:
     def loadParksDB(self, radius, min_area):
         try:
             self.data = pd.read_csv(DATASETS_PATH + "/parks_radius" + str(radius) + "_area" + str(min_area) + ".csv")
-            self.data = selectCols(self.data, ['ADDRESS', 'NUM_OF_PARKS', 'AREA_OF_PARKS']).drop_duplicates(subset='ADDRESS', keep='first')
+            self.data = selectCols(self.data, ['LAT', 'LON', 'NUM_OF_PARKS', 'AREA_OF_PARKS']).drop_duplicates(subset={'LAT', 'LON'}, keep='first')
         except FileNotFoundError:
            self.pushParksDB(radius, min_area)
 
@@ -38,8 +38,7 @@ class Parks:
         self.parks_data = self._extractParksData(min_area)  # parks_data doesn't contain the relation to the apartments
         self.data = Apartments.getInstance().getData()[['LAT', 'LON']] # data will contain a mapping from each apartment to
 
-        self.data = self.data.iloc[25613:]
-        self.data = selectCols(self.data, ['ADDRESS', 'LAT', 'LON'])
+        self.data = selectCols(self.data, ['LAT', 'LON'])
         self.iteration = 0
         parks_and_areas = self.data.apply(self._countAndSumParksInRadius, args=(radius,), axis=1)
         self.data[['NUM_OF_PARKS', 'AREA_OF_PARKS']] = parks_and_areas.apply(pd.Series)
@@ -99,7 +98,7 @@ class Parks:
     '''
     def _getShortestDistFromApartment(self, apartment_coord, park_coords):
         shortest = 10000
-        coords_list = park_coords.replace('MULTIPOLYGON', '').replace(')', '').replace('(', '').split(',')
+        coords_list = park_coords.replace('MULTIPOLYGON', '').replace(')', '').replace('(', '')
         for coord in coords_list:
             # for some reason 'coord' is in reversed order, so [::-1] flip it back to the wanted order
             distance = calcDistBetweenCoords(coord.split(' ')[::-1], apartment_coord)
