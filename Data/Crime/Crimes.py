@@ -19,7 +19,7 @@ class Crimes:
             self._coordsToZipcode()
             # add the number of crimes column to the zip codes
             self.data = self.data.groupby(['ZIP CODE']).size().reset_index(name='CRIMES').drop_duplicates()
-            self.data.to_csv(path_or_buf="Data/Datasets/crimes.csv", index=False)
+            self.data.to_csv(path_or_buf=DATASETS_PATH + "/crimes.csv", index=False)
 
     def _keepOnlyCoordsCols(self):
         self.data = selectCols(self.data, [self.X_COORD, self.Y_COORD])

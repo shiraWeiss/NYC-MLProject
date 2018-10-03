@@ -16,15 +16,15 @@ class MainTable:
     def __init__(self, extra=None):
         try:
             if extra is not None:
-                self.main_db = pd.read_csv("Data/Datasets/mainDB" + str(extra) + ".csv")
+                self.main_db = pd.read_csv(DATASETS_PATH + "/mainDB" + str(extra) + ".csv")
             else:
-                self.main_db = pd.read_csv("Data/Datasets/mainDB.csv")
+                self.main_db = pd.read_csv(DATASETS_PATH + "/mainDB.csv")
         except FileNotFoundError:
             self._extractAllDatasets()
             self._mergeAllDB()
             Normalizer(self.main_db).normalizeFeatures()
             # self.main_db = selectCols(self.main_db, all_filters)
-            self.main_db = self.main_db.to_csv(path_or_buf="Data/Datasets/mainDB.csv", index=False)
+            self.main_db = self.main_db.to_csv(path_or_buf=DATASETS_PATH + "/mainDB.csv", index=False)
 
     def _extractAllDatasets(self):
         print("Extractnig all Datasets...")

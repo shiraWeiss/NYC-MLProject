@@ -28,8 +28,8 @@ class ArtGalleries:
 
 
     def _extractGalleriesData(self):
-        galleries = pd.read_csv("Data/ArtGalleries/ART_GALLERY.csv")
-        galleries = galleries   #   .head(TEST_LINES)  # todo remove!! short only for testing
+        galleries = pd.read_csv(DATASETS_PATH + "/ArtGalleries/ART_GALLERY.csv")
+        galleries = galleries
         galleries = self._getGalleriesCoords(galleries)
         return galleries
 
@@ -59,8 +59,3 @@ class ArtGalleries:
 
     def getData(self):
         return self.data
-
-
-if __name__ == '__main__':
-    glr = ArtGalleries()
-    print(glr.getData())

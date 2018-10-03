@@ -109,10 +109,10 @@ def _addBarValue(bars, scores, ax, xpos='center'):
 
 def graph_save(fig, name):
     time = datetime.datetime.now()
-    # todo : take note, if in the start of the path for 'name' there is no "Graphs/" - add it.
-    name = name + '-' + str(time.day) + '-' + str(time.month) \
-           + '-' + str(time.year) + '--' + str(time.hour) + str(time.minute) + str(time.second)+ '.png'
-    fig.savefig(name, dpi=300)
+    # # todo : take note, if in the start of the path for 'name' there is no "Graphs/" - add it.
+    # name = name + '-' + str(time.day) + '-' + str(time.month) \
+    #        + '-' + str(time.year) + '--' + str(time.hour) + str(time.minute) + str(time.second)+ '.png'
+    # fig.savefig(name, dpi=300)
 
 def graph_coorelation(x, y, x_label, y_label):
     name = 'Relationship between ' + x_label + ' and ' + y_label
@@ -172,4 +172,4 @@ def graph_paramTuning(train_scores_dict, test_scores_dict, algorithm_name, param
     plt.legend(loc='upper left')
     plt.show()
     name = algorithm_name + '_tuning_param_' + param_name
-    # graph_save(fig, name) #todo not save for submission
+    graph_save(fig, name) #todo not save for submission

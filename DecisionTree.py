@@ -175,8 +175,10 @@ if __name__ == '__main__':
     tree.buildWithBestParams(max_depth=best_depth, min_samples_leaf=best_min_samples,
                              max_leaf_nodes=best_num_leafs,min_impurity_decrease=best_impurity)
     parksParamTuning()
-    paramTuning('galleries_db1', [0.2, 0.5, 1, 2, 3], 'Galleries radius (km) ')
+    paramTuning('_galleries_db', [0.2, 0.5, 1, 2, 3], 'Galleries radius (km) ')
     paramTuning('_museums_db', [0.2, 0.5, 1, 2, 3], 'Museums radius (km) ')
+
+
 
 
 
