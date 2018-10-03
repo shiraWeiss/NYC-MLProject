@@ -124,7 +124,7 @@ def paramTuning(file_name, param_values_list, param_name):
         tot_train_score    = 0
         tot_test_score     = 0
         n = 5
-        for i in range(1,n):
+        for i in range(1, n+1):
             regressor = DecisionTreeRegressor(min_impurity_decrease=200)
             regressor.fit(X_train, y_train)
 

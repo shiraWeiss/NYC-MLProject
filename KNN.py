@@ -56,14 +56,11 @@ def crossValidateWithValidationGroup(X, y, X_train, X_test, y_test, knn_regresso
         actual_score = knn_regressor.score(X_test, y_test)
         total += actual_score
 
-        print("train_score: " + str(train_score) + ",\ttest_score: " + str(test_score) + ",\tACTUAL: " + str(actual_score))
-
     return total / n
 
 def findingBestN_crossValidation(X, y, X_train, X_test, y_test, knn_regressor, init_n, final_n):
     mean_score_dict = {}
     for n in range(init_n, final_n, 2):
-        print("n: " + str(n) + "...")
         mean_score_dict[n] = crossValidateWithValidationGroup(X, y, X_train, X_test, y_test, knn_regressor, n)
     graph_multipleExperiments_compareParameterEffect_meanScores(mean_score_dict, 'KNN', 'n = number of splits')
 
@@ -92,20 +89,26 @@ def paramTuning(file_name, param_values_list, param_name):
 
 if __name__ == '__main__':
     # # Get the base table
-    # all_data = MainTable()
-    # df = all_data.getDB()
-    #
-    # # Split to Data and Actual results
-    # X = selectCols(df, features)
-    # y = df['SQR_FEET_PRICE']
+    all_data = MainTable()
+    df = all_data.getDB()
 
-    paramTuning('_galleries_db', [0.2, 0.5, 1, 2, 3, 4, 5], 'Galleries radius (km)')
-    # paramTuning('_museums_db', [0.2, 0.5, 1, 2, 3], 'Museums radius (km)')
-    # y_pred, test_score, train_score = predictionAndScore(X, y, 16)
+    # # Split to Data and Actual results
+    X = selectCols(df, features)
+    y = df['SQR_FEET_PRICE']
+
+    # Basic prediction with optimal K
+    y_pred, test_score, train_score = predictionAndScore(X, y, 16)
+    print("KNN: Training score: " + str(train_score) + "Test score: " + str(test_score))
 
     # Cross validation
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
-    # knn_regressor = neighbors.KNeighborsRegressor(n_neighbors=16)
-    # cv_results = cross_validate(knn_regressor, X_train, y_train, cv=3, return_train_score=True)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+    knn_regressor = neighbors.KNeighborsRegressor(n_neighbors=16)
+    cv_results = cross_validate(knn_regressor, X_train, y_train, cv=3, return_train_score=True)
+    print("KNN w/ Cross Validation: Training score: " + str(cv_results['train_score']) + ", Test score: " + str(cv_results['test_score']))
 
-    # findingBestN_crossValidation(X, y, X_train, X_test, y_test, knn_regressor, 2, 40)
+    # Finiding best N for cross validation
+    findingBestN_crossValidation(X, y, X_train, X_test, y_test, knn_regressor, 2, 40)
+
+    # Parameter tuning: Galleries & Museums
+    paramTuning('_galleries_db', [0.2, 0.5, 1, 2, 3, 4, 5], 'Galleries radius (km)')
+    paramTuning('_museums_db', [0.2, 0.5, 1, 2, 3], 'Museums radius (km)')

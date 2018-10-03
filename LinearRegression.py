@@ -34,13 +34,13 @@ def coorelationExperiments(X, y, df, regressor):
     # Corelation examining
     estimated_coefs = pd.DataFrame(list(zip(X.columns, regressor.coef_)), columns=['features', 'esitmatedCoefficients'])
     estimated_coefs.to_csv(path_or_buf="LinearRegression_EstimatedCoefficients.csv")
-    # graph_coorelation(selectCols(df, ['HIGH_SCHOOLS']), y, 'Highschools Quality (1.2km radius)', 'Apartment Price')
-    # graph_coorelation(selectCols(df, ['NUM_OF_PARKS']), y, 'Number of Parks (1km radius)', 'Apartment Price')
-    # graph_coorelation(selectCols(df, ['NOISE']), y, 'Amount of Noise in Apartment Area', 'Apartment Price')
-    # graph_coorelation(selectCols(df, ['GALLERIES']), y, 'Number of Galleries (1km radius)', 'Apartment Price')
-    # graph_coorelation(selectCols(df, ['MUSEUMS']), y, 'Number of Museums (1km radius)', 'Apartment Price')
-    # graph_coorelation(selectCols(df, ['BOROUGH']), y, 'Borough', 'Apartment Price')  # todo - as histogram
-    # graph_coorelation(selectCols(df, ['BUILDING_AGE']), y, 'Building Age', 'Apartment Price')
+    graph_coorelation(selectCols(df, ['HIGH_SCHOOLS']), y, 'Highschools Quality (1.2km radius)', 'Apartment Price')
+    graph_coorelation(selectCols(df, ['NUM_OF_PARKS']), y, 'Number of Parks (1km radius)', 'Apartment Price')
+    graph_coorelation(selectCols(df, ['NOISE']), y, 'Amount of Noise in Apartment Area', 'Apartment Price')
+    graph_coorelation(selectCols(df, ['GALLERIES']), y, 'Number of Galleries (1km radius)', 'Apartment Price')
+    graph_coorelation(selectCols(df, ['MUSEUMS']), y, 'Number of Museums (1km radius)', 'Apartment Price')
+    graph_coorelation(selectCols(df, ['BOROUGH']), y, 'Borough', 'Apartment Price')
+    graph_coorelation(selectCols(df, ['BUILDING_AGE']), y, 'Building Age', 'Apartment Price')
 
 
 if __name__ == '__main__':
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     regressor = LinearRegression()
     regressor.fit(X_train, y_train)
 
-    # coorelationExperiments(X, y, df, regressor)
-    # predictionAndScore_andDisplay(regressor, X_train, X_test, y_train, y_test)
+    coorelationExperiments(X, y, df, regressor)
+    predictionAndScore_andDisplay(regressor, X_train, X_test, y_train, y_test)
 
 
