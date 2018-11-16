@@ -163,10 +163,7 @@ def parksParamTuning():
 
 
 if __name__ == '__main__':
-    # Accuracy for best parameters:
-    #     Train group: 0.63
-    # Test group: 0.72
-    tree = RandomForest(save=True)
+    tree = RandomForest(save=False)
     best_impurity = tree.testClassifierWithMinImpuritryDecrease([0, 25, 50, 75, 100, 150, 200, 250, 500, 1000, 1500])
     best_depth = tree.testClassifierWithMaxDepth([2, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 22, None])
     best_num_leafs = tree.testClassifierWithMaxLeafNodes([5, 10, 15, 30, 45, 60, 75, 100, 125, 150, None])
