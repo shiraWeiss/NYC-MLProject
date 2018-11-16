@@ -1,11 +1,11 @@
 from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
-from Data.MainTable import MainTable, removeCols, selectCols
-from Graphs.Graphs import graph_compareAccuracyOfDifferentParamsValues
+from Data.MainTable import MainTable, removeCols, selectCols, features
+from Graphs.Graphs import graph_compareAccuracyOfDifferentParamsValues, graph_paramTuning
 
 TEST_SIZE = 0.2
-N_ESTIMATORS = 50
+N_ESTIMATORS = 100
 
 class RandomForest:
 
@@ -102,10 +102,70 @@ class RandomForest:
         print("Test group: " + str(test_score_sum/10))
 
 
+
+def paramTuning(file_name, param_values_list, param_name):
+    train_scores_dict = {}
+    test_scores_dict = {}
+    for p in param_values_list:
+        # Get the base table
+        all_data = MainTable(extra = file_name + str(p))
+        df = all_data.getDB()
+
+        # Split to Data and Actual results
+        X = selectCols(df, features)
+        y = df['SQR_FEET_PRICE']
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+
+        tot_train_score    = 0
+        tot_test_score     = 0
+        n = 5
+        for i in range(1,n):
+            regressor = RandomForestRegressor(n_estimators=N_ESTIMATORS, min_impurity_decrease=200)
+            regressor.fit(X_train, y_train)
+
+            tot_train_score += regressor.score(X_train, y_train)
+            tot_test_score += regressor.score(X_test, y_test)
+
+        train_scores_dict[p] = tot_train_score / n
+        test_scores_dict[p] = tot_test_score / n
+    graph_paramTuning(train_scores_dict, test_scores_dict, 'Tuning ' + param_name + 'with Desicion Trees', param_name)
+
+
+def parksParamTuning():
+    train_scores_dict = {}
+    test_scores_dict = {}
+    radius_list = [0.5, 1]
+    area_list = [100, 200]
+    for radius in radius_list:
+        for area in area_list:
+            file_name = "_parksRadius" + str(radius) + "_area" + str(area)
+            all_data = MainTable(extra=file_name)
+            df = all_data.getDB()
+            # Split to Data and Actual results
+            X = selectCols(df, features)
+            y = df['SQR_FEET_PRICE']
+
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            tot_train_score = 0
+            tot_test_score = 0
+            n = 5
+            for i in range(0, n):
+                regressor = RandomForestRegressor(n_estimators=N_ESTIMATORS, min_impurity_decrease=200)
+                regressor.fit(X_train, y_train)
+
+                tot_train_score += regressor.score(X_train, y_train)
+                tot_test_score += regressor.score(X_test, y_test)
+
+            train_scores_dict["radius " + str(radius) + "\narea " + str(area)] = tot_train_score / n
+            test_scores_dict["radius " + str(radius) + "\narea " + str(area)] = tot_test_score / n
+    graph_paramTuning(train_scores_dict, test_scores_dict, 'Tuning parks radius and area with Desicion Trees', 'Parks radius and area')
+
+
 if __name__ == '__main__':
     # Accuracy for best parameters:
-    #     Train group: 0.6478017775010801
-    # Test group: 0.6602092378851419
+    #     Train group: 0.63
+    # Test group: 0.72
     tree = RandomForest(save=True)
     best_impurity = tree.testClassifierWithMinImpuritryDecrease([0, 25, 50, 75, 100, 150, 200, 250, 500, 1000, 1500])
     best_depth = tree.testClassifierWithMaxDepth([2, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 22, None])
@@ -113,3 +173,7 @@ if __name__ == '__main__':
     best_min_samples = tree.testMinSamplesLeaf([1, 2, 4, 5, 8, 10, 15, 20, 25, 30, 40, 50])
     tree.buildWithBestParams(max_depth=best_depth, min_samples_leaf=best_min_samples,
                              max_leaf_nodes=best_num_leafs,min_impurity_decrease=best_impurity)
+
+    parksParamTuning()
+    paramTuning('_galleries_db', [0.2, 0.5, 1, 2, 3], 'Galleries radius (km) ')
+    paramTuning('_museums_db', [0.2, 0.5, 1, 2, 3], 'Museums radius (km) ')
