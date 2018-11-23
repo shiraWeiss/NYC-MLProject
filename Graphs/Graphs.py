@@ -110,9 +110,9 @@ def _addBarValue(bars, scores, ax, xpos='center'):
 def graph_save(fig, name):
     time = datetime.datetime.now()
     # # todo : take note, if in the start of the path for 'name' there is no "Graphs/" - add it.
-    # name = name + '-' + str(time.day) + '-' + str(time.month) \
-    #        + '-' + str(time.year) + '--' + str(time.hour) + str(time.minute) + str(time.second)+ '.png'
-    # fig.savefig(name, dpi=300)
+    name = name + '-' + str(time.day) + '-' + str(time.month) \
+           + '-' + str(time.year) + '--' + str(time.hour) + str(time.minute) + str(time.second)+ '.png'
+    fig.savefig(name, dpi=300)
 
 def graph_coorelation(x, y, x_label, y_label):
     name = 'Relationship between ' + x_label + ' and ' + y_label
@@ -122,7 +122,7 @@ def graph_coorelation(x, y, x_label, y_label):
     plt.ylabel(y_label)
     plt.title(name)
     name = 'LinearRegression/coorelation_graph_' + x_label + '_-_' + y_label
-    graph_save(fig, name)
+    # graph_save(fig, name)
 
 def graph_multipleExperiments_compareParameterEffect(train_scores_dict, test_scores_dict, algorithm_name, param_name):
     train_values    = list(train_scores_dict.values())
@@ -140,7 +140,7 @@ def graph_multipleExperiments_compareParameterEffect(train_scores_dict, test_sco
     plt.legend(loc='upper left')
     plt.show()
     name = algorithm_name + '_checking_param_' + param_name
-    graph_save(fig, name)
+    # graph_save(fig, name)
 
 def graph_multipleExperiments_compareParameterEffect_meanScores(mean_scores_dict, algorithm_name, param_name):
     train_values    = list(mean_scores_dict.values())
@@ -154,7 +154,7 @@ def graph_multipleExperiments_compareParameterEffect_meanScores(mean_scores_dict
     plt.legend(loc='upper left')
     plt.show()
     name = algorithm_name + '_checking_param_' + param_name
-    graph_save(fig, name)
+    # graph_save(fig, name)
 
 def graph_paramTuning(train_scores_dict, test_scores_dict, algorithm_name, param_name):
     train_values    = list(train_scores_dict.values())
@@ -172,4 +172,29 @@ def graph_paramTuning(train_scores_dict, test_scores_dict, algorithm_name, param
     plt.legend(loc='upper left')
     plt.show()
     name = algorithm_name + '_tuning_param_' + param_name
-    graph_save(fig, name) #todo not save for submission
+    # graph_save(fig, name) #todo not save for submission
+
+def graph_barsForFeatures(train_scores_dict, test_scores_dict, title, param_name, b_train, b_test):
+    train_values    = list(train_scores_dict.values())
+    train_keys      = list(train_scores_dict.keys())
+    test_values     = list(test_scores_dict.values())
+    test_keys       = list(test_scores_dict.keys())
+    fig, ax = plt.subplots()
+
+    N = len(train_keys)
+    ind = np.arange(N)
+    width = 0.35
+
+    plt.hlines(y=b_train, color='lightgrey', xmin=-0.5, xmax=11, linestyles='--', label='Basic features, Training Accuracy')
+    plt.hlines(y=b_test, color='grey', xmin=-0.5, xmax=11, linestyles='--', label='Basic features, Test Accuracy')
+    plt.bar(ind, train_values, width, label='Training Accuracy', color='limegreen')
+    plt.bar(ind + width, test_values, width, label='Test Accuracy', color='greenyellow')
+
+    plt.xticks(ind + width / 2, train_keys, rotation=17)
+    plt.xlabel(param_name)
+    plt.ylabel('Accuracy')
+    plt.title(title)
+    plt.legend(loc='lower right')
+    plt.show()
+    name = 'features_comparison'
+    # graph_save(fig, name) #todo not save for submission

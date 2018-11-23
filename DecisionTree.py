@@ -8,7 +8,7 @@ from sklearn.cross_validation import train_test_split, cross_val_score
 from sklearn.tree import DecisionTreeRegressor
 from Data.ExtractionUtils import removeCols, selectCols, features
 from Data.MainTable import MainTable
-from Graphs.Graphs import graph_compareAccuracyOfDifferentParamsValues, graph_paramTuning
+from Graphs.Graphs import graph_compareAccuracyOfDifferentParamsValues, graph_paramTuning, graph_barsForFeatures
 
 TEST_SIZE = 0.2
 
@@ -135,6 +135,77 @@ def paramTuning(file_name, param_values_list, param_name):
         test_scores_dict[p] = tot_test_score / n
     graph_paramTuning(train_scores_dict, test_scores_dict, 'Tuning ' + param_name + 'with Desicion Trees', param_name)
 
+def getBaseFeatsScores(df, base_feats):
+    # Split to Data and Actual results
+    X_b = selectCols(df, base_feats)
+    y_b = df['SQR_FEET_PRICE']
+
+    X_train_b, X_test_b, y_train_b, y_test_b = train_test_split(X_b, y_b, test_size=0.25, random_state=42)
+
+    tot_train_score_b = 0
+    tot_test_score_b = 0
+    n = 5
+    for i in range(1, n + 1):
+        regressor = DecisionTreeRegressor(min_impurity_decrease=200)
+        regressor.fit(X_train_b, y_train_b)
+
+        tot_train_score_b += regressor.score(X_train_b, y_train_b)
+        tot_test_score_b += regressor.score(X_test_b, y_test_b)
+
+    mean_train_score_b = tot_train_score_b / n
+    mean_test_score_b = tot_test_score_b / n
+
+    return mean_train_score_b, mean_test_score_b
+
+def compareFeatures():
+    # Get the base table
+    all_data = MainTable()
+    df = all_data.getDB()
+
+    base_feats =    [   'BOROUGH',
+                        'BUILDING_AGE'  ]
+
+    external_feats = [   'CRIMES',
+                         'HI_ED',
+                         'HIGH_SCHOOLS',
+                         'BUS_STOPS',
+                         'SUBWAY_STOPS',
+                         'NUM_OF_PARKS',
+                         'AREA_OF_PARKS',
+                         'NOISE',
+                         'HEALTH',
+                         'GALLERIES',
+                         'MUSEUMS' ]
+
+
+    mean_train_score_b, mean_test_score_b = getBaseFeatsScores(df, base_feats)
+
+    train_scores_dict = {}
+    test_scores_dict = {}
+    for feat in external_feats:
+        curr_feats = base_feats
+        curr_feats.append(feat)
+
+        # Split to Data and Actual results
+        X = selectCols(df, curr_feats)
+        y = df['SQR_FEET_PRICE']
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+
+        tot_train_score    = 0
+        tot_test_score     = 0
+        n = 5
+        for i in range(1, n+1):
+            regressor = DecisionTreeRegressor(min_impurity_decrease=200)
+            regressor.fit(X_train, y_train)
+
+            tot_train_score += regressor.score(X_train, y_train)
+            tot_test_score += regressor.score(X_test, y_test)
+
+        train_scores_dict[feat] = tot_train_score / n
+        test_scores_dict[feat] = tot_test_score / n
+    graph_barsForFeatures(train_scores_dict, test_scores_dict, 'Comparing features using Desicion Trees',
+                          'Feature Name', mean_train_score_b, mean_test_score_b)
 
 def parksParamTuning():
     train_scores_dict = {}
@@ -177,6 +248,7 @@ if __name__ == '__main__':
     parksParamTuning()
     paramTuning('_galleries_db', [0.2, 0.5, 1, 2, 3], 'Galleries radius (km) ')
     paramTuning('_museums_db', [0.2, 0.5, 1, 2, 3], 'Museums radius (km) ')
+    compareFeatures()
 
 
 
